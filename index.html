@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Toolbox Pro - Math</title>
+    <title>Smart Toolbox 2026 Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
     <style>
         :root {
@@ -11,119 +11,170 @@
             --gray: #8e8e93; --border: #38383a; --red: #ff453a; --success: #30d158;
         }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
-        .container { max-width: 600px; margin: auto; background: var(--card); border-radius: 30px; padding: 25px; min-height: 90vh; display: flex; flex-direction: column; border: 1px solid var(--border); box-sizing: border-box; }
-        h2 { text-align: center; margin-bottom: 20px; }
-        input { background: #2c2c2e; border: 1px solid var(--border); color: white; padding: 18px; border-radius: 12px; width: 100%; font-size: 20px; box-sizing: border-box; outline: none; font-family: 'Courier New', monospace; }
-        .btn-3d { background: var(--accent); border: none; border-radius: 15px; color: white; font-size: 20px; font-weight: bold; padding: 15px 0; cursor: pointer; box-shadow: 0 6px #0056b3; margin-top: 15px; width: 100%; transition: 0.1s; }
-        .btn-3d:active { box-shadow: 0 2px #0056b3; transform: translateY(4px); }
-        .result-box { background: rgba(48, 209, 88, 0.1); padding: 20px; border-radius: 14px; border: 1px solid var(--success); margin: 20px 0; font-weight: 600; font-size: 22px; text-align: center; }
-        .steps { background: #111; padding: 15px; border-radius: 10px; font-size: 14px; color: var(--gray); line-height: 1.5; overflow-x: auto; }
-        .back-btn { background: #333; color: white; border: 1px solid var(--border); padding: 15px; border-radius: 16px; width: 100%; margin-top: auto; }
-        small { color: var(--gray); display: block; text-align: center; margin-bottom: 10px; }
+        .container { max-width: 600px; margin: auto; background: var(--card); border-radius: 30px; padding: 20px; min-height: 92vh; display: flex; flex-direction: column; border: 1px solid var(--border); box-sizing: border-box; }
+        .hidden { display: none !important; }
+        h1, h2 { text-align: center; font-weight: 700; margin-bottom: 20px; }
+        .btn-3d { background: #333; border: none; border-radius: 15px; color: white; font-size: 22px; font-weight: bold; padding: 20px 0; cursor: pointer; box-shadow: 0 6px #1a1a1a; transition: all 0.1s; position: relative; width: 100%; }
+        .btn-3d:active { box-shadow: 0 2px #1a1a1a; transform: translateY(4px); }
+        .btn-op { background: #444; color: var(--accent); }
+        .btn-eq { background: var(--accent); color: white; box-shadow: 0 6px #0056b3; }
+        .main-btn { background: #2c2c2e; color: white; border: none; padding: 20px; border-radius: 18px; margin: 8px 0; font-size: 17px; font-weight: 600; cursor: pointer; width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        input, select { background: #2c2c2e; border: 1px solid var(--border); color: white; padding: 14px; border-radius: 12px; width: 100%; font-size: 16px; box-sizing: border-box; outline: none; }
+        .result-box { background: rgba(10, 132, 255, 0.1); padding: 15px; border-radius: 14px; border: 1px solid var(--accent); margin: 10px 0; font-weight: 600; text-align: center; font-size: 1.2rem; }
+        .steps { background: #111; padding: 12px; border-radius: 10px; font-size: 14px; color: var(--gray); margin-top: 10px; }
+        .back-btn { background: #333; color: white; border: 1px solid var(--border); padding: 15px; border-radius: 16px; width: 100%; margin-top: auto; font-weight: 600; }
+        .roman-keyboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Egyenletmegoldó</h2>
-    <small>Példák: 2x^2 - 4x + 2 = 0 | x/2 + 5 = 10 | sqrt(x) = 4</small>
-    
-    <input type="text" id="eq-input" placeholder="Írd be az egyenletet..." inputmode="text">
-    
-    <button class="btn-3d" onclick="solve()">Megoldás</button>
+<div class="container" id="menu">
+    <div style="font-size: 50px; text-align: center; margin: 20px 0;">🛠️</div>
+    <h1>Smart Toolbox</h1>
+    <button class="main-btn" onclick="show('calc')">🔢 Számológép <span>›</span></button>
+    <button class="main-btn" onclick="show('egyenlet')">➗ Profi Egyenlet <span>›</span></button>
+    <button class="main-btn" onclick="show('egyeb')">⚙️ Egyéb <span>›</span></button>
+</div>
 
-    <div id="res-area" class="hidden">
-        <div class="result-box" id="eq-res">x = ?</div>
-        <div class="steps" id="eq-steps"></div>
+<div class="container hidden" id="calc">
+    <input type="text" id="calc-display" readonly value="0" style="text-align:right; font-size:48px; height:100px; background:transparent; border:none;">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+        <button class="btn-3d btn-op" onclick="clearCalc()">AC</button>
+        <button class="btn-3d btn-op" id="paren-btn" onclick="appendCalc('(')">(</button>
+        <button class="btn-3d btn-op" onclick="appendCalc(')')">)</button>
+        <button class="btn-3d btn-op" onclick="appendCalc('/')">÷</button>
+        <button class="btn-3d" onclick="appendCalc('7')">7</button>
+        <button class="btn-3d" onclick="appendCalc('8')">8</button>
+        <button class="btn-3d" onclick="appendCalc('9')">9</button>
+        <button class="btn-3d btn-op" onclick="appendCalc('*')">×</button>
+        <button class="btn-3d" onclick="appendCalc('4')">4</button>
+        <button class="btn-3d" onclick="appendCalc('5')">5</button>
+        <button class="btn-3d" onclick="appendCalc('6')">6</button>
+        <button class="btn-3d btn-op" onclick="appendCalc('-')">-</button>
+        <button class="btn-3d" onclick="appendCalc('1')">1</button>
+        <button class="btn-3d" onclick="appendCalc('2')">2</button>
+        <button class="btn-3d" onclick="appendCalc('3')">3</button>
+        <button class="btn-3d btn-op" onclick="appendCalc('+')">+</button>
+        <button class="btn-3d" style="grid-column: span 2;" onclick="appendCalc('0')">0</button>
+        <button class="btn-3d" onclick="appendCalc('.')">.</button>
+        <button class="btn-3d btn-eq" onclick="calculate()">=</button>
     </div>
+    <button class="back-btn" onclick="show('menu')">Vissza</button>
+</div>
 
-    <button class="back-btn" onclick="window.history.back()">Vissza</button>
+<div class="container hidden" id="egyenlet">
+    <h2>Egyenletmegoldó</h2>
+    <small style="color:var(--gray); text-align:center; display:block; margin-bottom:10px;">Pl: x^2-5x+6=0 vagy x/2=10</small>
+    <input type="text" id="eq-input" placeholder="x + 5 = 10">
+    <button class="btn-3d btn-eq" onclick="solvePro()">Megoldás</button>
+    <div class="result-box" id="eq-res">x = ?</div>
+    <div id="eq-steps" class="steps hidden"></div>
+    <button class="back-btn" onclick="show('menu')">Vissza</button>
+</div>
+
+<div class="container hidden" id="egyeb">
+    <h2>Egyéb funkciók</h2>
+    <button class="main-btn" onclick="show('romai')">🏛️ Római számok</button>
+    <button class="main-btn" onclick="show('sebesseg')">🚀 Sebesség</button>
+    <button class="main-btn" onclick="show('hossz')">📏 Hossz</button>
+    <button class="main-btn" onclick="show('kor')">🎂 Életkor</button>
+    <button class="back-btn" onclick="show('menu')">Vissza</button>
+</div>
+
+<div class="container hidden" id="romai">
+    <h2>Római számok</h2>
+    <input type="number" id="num-in" placeholder="Szám..." oninput="toRoman(this.value)">
+    <input type="text" id="rom-in" readonly placeholder="Római jelek..." style="margin-top:10px">
+    <div class="roman-keyboard">
+        <button class="btn-3d" onclick="appendRoman('M')">M</button>
+        <button class="btn-3d" onclick="appendRoman('D')">D</button>
+        <button class="btn-3d" onclick="appendRoman('C')">C</button>
+        <button class="btn-3d" onclick="appendRoman('L')">L</button>
+        <button class="btn-3d" onclick="appendRoman('X')">X</button>
+        <button class="btn-3d" onclick="appendRoman('V')">V</button>
+        <button class="btn-3d" onclick="appendRoman('I')">I</button>
+        <button class="btn-3d" onclick="appendRoman('DEL')" style="background:var(--red); box-shadow: 0 6px #a00;">←</button>
+    </div>
+    <div id="rom-res-box" class="result-box" style="margin-top:15px">...</div>
+    <button class="back-btn" onclick="show('egyeb')">Vissza</button>
+</div>
+
+<div class="container hidden" id="sebesseg">
+    <h2>Sebesség</h2>
+    <input type="number" id="v1-val" placeholder="km/h" oninput="calcV(1)">
+    <div class="result-box" id="v-res">...</div>
+    <button class="back-btn" onclick="show('egyeb')">Vissza</button>
 </div>
 
 <script>
-function solve() {
-    const input = document.getElementById('eq-input').value.replace(':', '/');
-    const resBox = document.getElementById('eq-res');
-    const stepsBox = document.getElementById('eq-steps');
-    const resArea = document.getElementById('res-area');
-
-    if (!input.includes('=')) {
-        resBox.innerText = "Hiba: Hiányzik az '=' jel!";
-        return;
+    function show(id) { 
+        document.querySelectorAll('.container').forEach(c => c.classList.add('hidden')); 
+        document.getElementById(id).classList.remove('hidden'); 
     }
 
-    try {
-        const parts = input.split('=');
-        // Átrendezzük 0-ra: (bal oldal) - (jobb oldal) = 0
-        const equation = `(${parts[0]}) - (${parts[1]})`;
-        
-        // Megoldás keresése (numerikus közelítéssel komplexebb esetekre)
-        // Először megpróbáljuk egyszerű szimbolikus megoldással (ha másodfokú)
-        let results = [];
-        
-        if (input.includes('^2')) {
-            // Másodfokú felismerő és megoldó
-            results = solveQuadratic(parts[0], parts[1]);
-        } else {
-            // Lineáris vagy törtes
-            const x = math.evaluate(`solve(${equation} = 0, x)`); 
-            // Megjegyzés: a math.js solve funkciója egyes verziókban máshogy érhető el, 
-            // ezért egy biztosabb Newton-módszer alapú keresőt használunk:
-            const f = math.parse(equation).compile();
-            const root = findRoot(f);
-            results = [root];
-        }
+    // Számológép
+    let expr = "";
+    function appendCalc(v) { expr += v; updateDisp(); }
+    function clearCalc() { expr = ""; updateDisp(); }
+    function updateDisp() { document.getElementById('calc-display').value = expr || "0"; }
+    function calculate() { try { expr = eval(expr.replace('×','*').replace('÷','/')).toString(); updateDisp(); } catch(e) { expr = ""; document.getElementById('calc-display').value = "Hiba"; } }
 
-        resBox.innerHTML = results.map((r, i) => `x<sub>${i+1}</sub> = ${math.format(r, {precision: 4})}`).join('<br>');
-        stepsBox.innerHTML = `<b>Elemzett egyenlet:</b> ${equation} = 0<br><b>Módszer:</b> ${input.includes('^2') ? 'Másodfokú megoldóképlet' : 'Algebrái átalakítás'}`;
-        resArea.classList.remove('hidden');
+    // PROFI EGYENLETMEGOLDÓ (Math.js)
+    function solvePro() {
+        const input = document.getElementById('eq-input').value.replace(/\s/g, '').replace(',', '.');
+        const resBox = document.getElementById('eq-res');
+        const stepsBox = document.getElementById('eq-steps');
+        if (!input.includes('=')) { resBox.innerText = "Hiányzik az '='"; return; }
 
-    } catch (e) {
-        resBox.innerText = "Hiba: Ellenőrizd a formátumot!";
-        stepsBox.innerText = e.message;
+        try {
+            const parts = input.split('=');
+            const equation = `(${parts[0]}) - (${parts[1]})`;
+            stepsBox.classList.remove('hidden');
+            
+            if (input.includes('^2')) {
+                const f = math.parse(equation).compile();
+                const c = f.evaluate({x: 0});
+                const p1 = f.evaluate({x: 1});
+                const m1 = f.evaluate({x: -1});
+                const a = (p1 + m1 - 2*c) / 2;
+                const b = p1 - a - c;
+                const d = b*b - 4*a*c;
+                
+                if (d < 0) { resBox.innerText = "Nincs valós gyök"; stepsBox.innerHTML = `D = ${d.toFixed(2)}`; }
+                else if (d === 0) { resBox.innerText = "x = " + (-b/(2*a)).toFixed(4); }
+                else {
+                    const x1 = (-b + Math.sqrt(d)) / (2*a);
+                    const x2 = (-b - Math.sqrt(d)) / (2*a);
+                    resBox.innerHTML = `x1 = ${x1.toFixed(4)}<br>x2 = ${x2.toFixed(4)}`;
+                    stepsBox.innerHTML = `Másodfokú formula alapján.<br>D = ${d.toFixed(2)}`;
+                }
+            } else {
+                // Lineáris / Törtes közelítés
+                const f = math.parse(equation).compile();
+                let x = 1;
+                for(let i=0; i<20; i++) {
+                    let v = f.evaluate({x: x});
+                    let der = (f.evaluate({x: x+0.001}) - v) / 0.001;
+                    x = x - v/der;
+                }
+                resBox.innerText = "x ≈ " + x.toFixed(4);
+                stepsBox.innerHTML = "Numerikus közelítéssel megoldva.";
+            }
+        } catch(e) { resBox.innerText = "Hiba!"; }
     }
-}
 
-function solveQuadratic(left, right) {
-    // Kifejezés normalizálása: ax^2 + bx + c
-    const expr = math.simplify(`(${left}) - (${right})`).toString();
-    // Együtthatók kinyerése (leegyszerűsített parser)
-    const node = math.parse(expr);
-    let coeffs = { a: 0, b: 0, c: 0 };
-    
-    // Alapvető együttható kereső
-    math.parse(expr).traverse(function (node) {
-        if (node.isSymbolNode && node.name === 'x') { /* x keresése */ }
-    });
-
-    // Biztonsági manuális megoldás a math.js segítségével
-    // f(0), f(1), f(-1) értékekből kiszámoljuk a, b, c-t
-    const f = math.parse(expr).compile();
-    const c = f.evaluate({x: 0});
-    const fp1 = f.evaluate({x: 1});
-    const fm1 = f.evaluate({x: -1});
-    const a = (fp1 + fm1 - 2*c) / 2;
-    const b = fp1 - a - c;
-
-    const d = b*b - 4*a*c;
-    if (d < 0) return ["Nincs valós gyök"];
-    if (d === 0) return [-b / (2*a)];
-    return [(-b + Math.sqrt(d)) / (2*a), (-b - Math.sqrt(d)) / (2*a)];
-}
-
-function findRoot(f) {
-    // Newton-Raphson közelítés egyszerű egyenletekhez
-    let x = 1;
-    for (let i = 0; i < 20; i++) {
-        const val = f.evaluate({x: x});
-        const eps = 0.0001;
-        const der = (f.evaluate({x: x + eps}) - val) / eps;
-        if (Math.abs(der) < eps) break;
-        x = x - val / der;
+    // Római számok (meglévő logika)
+    const rMap = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};
+    const chars = {M:1000,D:500,C:100,L:50,X:10,V:5,I:1};
+    function toRoman(n) { let num=parseInt(n); if(!num) return; let res=""; for(let k in rMap){while(num>=rMap[k]){res+=k;num-=rMap[k];}} document.getElementById('rom-in').value=res; validateRoman(res); }
+    function appendRoman(c) { let i = document.getElementById('rom-in'); if(c==='DEL') i.value=i.value.slice(0,-1); else i.value+=c; validateRoman(i.value); }
+    function validateRoman(s) {
+        if(!s) { document.getElementById('rom-res-box').innerText="..."; return; }
+        let val=0; for(let i=0;i<s.length;i++){ let s1=chars[s[i]], s2=chars[s[i+1]]; if(s2>s1){val+=s2-s1;i++;}else{val+=s1;} }
+        document.getElementById('rom-res-box').innerHTML = `Érték: ${val}`;
     }
-    return x;
-}
+
+    function calcV(n) { /* Egyszerűsített placeholder */ }
 </script>
-
 </body>
 </html>
