@@ -3,167 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Toolbox Pro - Math S Pen Edition</title>
+    <title>Smart Toolbox 2026 Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
     <script defer src="https://unpkg.com/mathlive"></script>
     <style>
         :root {
-            --bg: #000000; --card: #1c1c1e; --accent: #0a84ff; --text: #ffffff; 
+            --bg: #000; --card: #1c1c1e; --accent: #0a84ff; --text: #fff; 
             --gray: #8e8e93; --border: #38383a; --red: #ff453a; --success: #30d158;
         }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; overflow-x: hidden; }
-        .container { max-width: 700px; margin: auto; background: var(--card); border-radius: 25px; padding: 15px; min-height: 95vh; display: flex; flex-direction: column; border: 1px solid var(--border); box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
+        .container { max-width: 800px; margin: auto; background: var(--card); border-radius: 25px; padding: 20px; min-height: 94vh; display: flex; flex-direction: column; border: 1px solid var(--border); box-sizing: border-box; }
         .hidden { display: none !important; }
         
-        /* Matematikai beviteli mező */
-        math-field {
-            font-size: 24px; background: #2c2c2e; border: 1px solid var(--accent); border-radius: 12px;
-            color: white; padding: 15px; margin-bottom: 15px; width: 100%; outline: none;
+        h1, h2 { text-align: center; font-weight: 700; margin-bottom: 20px; }
+
+        /* GOMBOK */
+        .btn-3d { 
+            background: #333; border: none; border-radius: 15px; color: white; font-size: 22px; font-weight: bold;
+            padding: 20px 0; cursor: pointer; box-shadow: 0 6px #1a1a1a; transition: all 0.1s; position: relative; width: 100%;
         }
+        .btn-3d:active { box-shadow: 0 2px #1a1a1a; transform: translateY(4px); }
+        .btn-op { background: #444; color: var(--accent); }
+        .btn-eq { background: var(--accent); color: white; box-shadow: 0 6px #0056b3; }
 
-        /* MATEMATIKAI PANEL */
-        .math-panel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-        .m-btn { 
-            background: #333; border: none; border-radius: 12px; color: white; font-size: 18px; 
-            padding: 15px 5px; cursor: pointer; box-shadow: 0 4px #1a1a1a; font-weight: bold;
-        }
-        .m-btn:active { transform: translateY(2px); box-shadow: 0 2px #1a1a1a; }
-        .m-accent { background: var(--accent); }
-        .m-var { background: #444; color: #ffd60a; }
+        .main-btn { background: #2c2c2e; color: white; border: none; padding: 20px; border-radius: 18px; margin: 8px 0; font-size: 17px; font-weight: 600; cursor: pointer; width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        
+        input, select { background: #2c2c2e; border: 1px solid var(--border); color: white; padding: 14px; border-radius: 12px; width: 100%; font-size: 16px; box-sizing: border-box; outline: none; }
+        
+        /* EGYENLET SPECIÁLIS */
+        math-field { font-size: 26px; background: #2c2c2e; border: 1px solid var(--accent); border-radius: 12px; color: white; padding: 15px; margin-bottom: 10px; width: 100%; outline: none; }
+        .math-panel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+        .m-btn { background: #333; border: none; border-radius: 10px; color: white; font-size: 18px; padding: 15px 5px; cursor: pointer; font-weight: bold; }
+        #canvas-container { border: 2px dashed var(--gray); border-radius: 15px; margin: 10px 0; background: #000; position: relative; }
+        canvas { width: 100%; height: 200px; touch-action: none; }
 
-        /* RAJZLAP (S PEN) */
-        #canvas-container { border: 2px dashed var(--gray); border-radius: 15px; margin: 10px 0; background: #111; position: relative; }
-        canvas { width: 100%; height: 200px; touch-action: none; cursor: crosshair; }
-
-        .result-box { background: rgba(48, 209, 88, 0.1); padding: 15px; border-radius: 14px; border: 1px solid var(--success); text-align: center; font-size: 1.5rem; margin: 10px 0; }
-        .back-btn { background: #333; color: white; border: 1px solid var(--border); padding: 15px; border-radius: 16px; width: 100%; margin-top: auto; }
+        .result-box { background: rgba(10, 132, 255, 0.1); padding: 15px; border-radius: 14px; border: 1px solid var(--accent); margin: 10px 0; font-weight: 600; text-align: center; }
+        .back-btn { background: #333; color: white; border: 1px solid var(--border); padding: 15px; border-radius: 16px; width: 100%; margin-top: auto; font-weight: 600; }
+        hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
     </style>
 </head>
 <body>
 
-<div class="container" id="egyenlet-page">
-    <h2 style="text-align: center; margin-top: 0;">Math Pro Megoldó</h2>
-    
-    <math-field id="mf" virtual-keyboard-mode="manual">x+4=6</math-field>
+<div class="container" id="menu">
+    <div style="font-size: 50px; text-align: center; margin: 20px 0;">🛠️</div>
+    <h1>Smart Toolbox</h1>
+    <button class="main-btn" onclick="show('calc')">🔢 Számológép <span>›</span></button>
+    <button class="main-btn" onclick="show('egyenlet')">➗ Egyenletmegoldó Pro <span>›</span></button>
+    <button class="main-btn" onclick="show('egyeb')">⚙️ Egyéb funkciók <span>›</span></button>
+</div>
 
+<div class="container hidden" id="calc">
+    <input type="text" id="calc-display" readonly value="0" style="text-align:right; font-size:48px; height:100px; background:transparent; border:none;">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+        <button class="btn-3d btn-op" onclick="clearCalc()">AC</button>
+        <button class="btn-3d btn-op" onclick="appendCalc('(')">(</button>
+        <button class="btn-3d btn-op" onclick="appendCalc(')')">)</button>
+        <button class="btn-3d btn-op" onclick="appendCalc('/')">÷</button>
+        <button class="btn-3d" onclick="appendCalc('7')">7</button>
+        <button class="btn-3d" onclick="appendCalc('8')">8</button>
+        <button class="btn-3d" onclick="appendCalc('9')">9</button>
+        <button class="btn-3d btn-op" onclick="appendCalc('*')">×</button>
+        <button class="btn-3d" onclick="appendCalc('4')">4</button>
+        <button class="btn-3d" onclick="appendCalc('5')">5</button>
+        <button class="btn-3d" onclick="appendCalc('6')">6</button>
+        <button class="btn-3d btn-op" onclick="appendCalc('-')">-</button>
+        <button class="btn-3d" onclick="appendCalc('1')">1</button>
+        <button class="btn-3d" onclick="appendCalc('2')">2</button>
+        <button class="btn-3d" onclick="appendCalc('3')">3</button>
+        <button class="btn-3d btn-op" onclick="appendCalc('+')">+</button>
+        <button class="btn-3d" style="grid-column: span 2;" onclick="appendCalc('0')">0</button>
+        <button class="btn-3d" onclick="appendCalc('.')">.</button>
+        <button class="btn-3d btn-eq" onclick="calculate()">=</button>
+    </div>
+    <button class="back-btn" onclick="show('menu')">Vissza</button>
+</div>
+
+<div class="container hidden" id="egyenlet">
+    <h2>Egyenlet Pro</h2>
+    <math-field id="mf">x+4=6</math-field>
     <div class="math-panel">
-        <button class="m-btn" onclick="add('1')">1</button>
-        <button class="m-btn" onclick="add('2')">2</button>
-        <button class="m-btn" onclick="add('3')">3</button>
-        <button class="m-btn m-accent" onclick="add('+')">+</button>
-        
-        <button class="m-btn" onclick="add('4')">4</button>
-        <button class="m-btn" onclick="add('5')">5</button>
-        <button class="m-btn" onclick="add('6')">6</button>
-        <button class="m-btn m-accent" onclick="add('-')">-</button>
-        
-        <button class="m-btn" onclick="add('7')">7</button>
-        <button class="m-btn" onclick="add('8')">8</button>
-        <button class="m-btn" onclick="add('9')">9</button>
-        <button class="m-btn m-accent" onclick="add('*')">×</button>
-        
-        <button class="m-btn m-var" onclick="add('x')">x</button>
-        <button class="m-btn m-var" onclick="add('y')">y</button>
-        <button class="m-btn m-var" onclick="add('z')">z</button>
-        <button class="m-btn m-accent" onclick="add('/')">÷</button>
-        
-        <button class="m-btn" onclick="add('^')">aⁿ</button>
-        <button class="m-btn" onclick="add('\\frac{#?}{#?}')">a/b</button>
-        <button class="m-btn" onclick="add('\\sqrt{#?}')">√x</button>
-        <button class="m-btn m-accent" onclick="add('=')">=</button>
-        
-        <button class="m-btn" onclick="add('(')">(</button>
-        <button class="m-btn" onclick="add(')')">)</button>
-        <button class="m-btn" style="background:var(--red);" onclick="add('clear')">AC</button>
-        <button class="m-btn m-accent" style="background:var(--success);" onclick="solveMath()">GO</button>
+        <button class="m-btn" onclick="addE('1')">1</button><button class="m-btn" onclick="addE('2')">2</button><button class="m-btn" onclick="addE('3')">3</button><button class="m-btn" style="color:var(--accent)" onclick="addE('+')">+</button>
+        <button class="m-btn" onclick="addE('4')">4</button><button class="m-btn" onclick="addE('5')">5</button><button class="m-btn" onclick="addE('6')">6</button><button class="m-btn" style="color:var(--accent)" onclick="addE('-')">-</button>
+        <button class="m-btn" onclick="addE('7')">7</button><button class="m-btn" onclick="addE('8')">8</button><button class="m-btn" onclick="addE('9')">9</button><button class="m-btn" style="color:var(--accent)" onclick="addE('*')">×</button>
+        <button class="m-btn" style="color:#ffd60a" onclick="addE('x')">x</button><button class="m-btn" style="color:#ffd60a" onclick="addE('y')">y</button><button class="m-btn" onclick="addE('^')">aⁿ</button><button class="m-btn" onclick="addE('/')">÷</button>
+        <button class="m-btn" onclick="addE('\\frac{#?}{#?}')">a/b</button><button class="m-btn" onclick="addE('\\sqrt{#?}')">√</button><button class="m-btn" style="background:var(--red)" onclick="addE('clear')">AC</button><button class="m-btn" style="background:var(--success)" onclick="solvePro()">GO</button>
     </div>
+    <button class="m-btn" style="width:100%; background:#444" onclick="toggleCanvas()">✍️ S Pen Rajztábla</button>
+    <div id="canvas-container" class="hidden"><canvas id="spenCanvas"></canvas></div>
+    <div class="result-box" id="eq-res">x = ?</div>
+    <button class="back-btn" onclick="show('menu')">Vissza</button>
+</div>
 
-    <button class="m-btn" style="width:100%; margin-bottom:10px; background:#444;" onclick="toggleCanvas()">✍️ S Pen Rajztábla (Be/Ki)</button>
-    
-    <div id="canvas-container" class="hidden">
-        <canvas id="spenCanvas"></canvas>
-        <button onclick="clearCanvas()" style="position:absolute; right:10px; top:10px; background:var(--red); color:white; border:none; padding:5px 10px; border-radius:5px;">Törlés</button>
-    </div>
+<div class="container hidden" id="egyeb">
+    <h2>Egyéb funkciók</h2>
+    <button class="main-btn" onclick="show('romai')">🏛️ Római számok</button>
+    <button class="main-btn" onclick="show('hossz')">📏 Hosszváltó</button>
+    <button class="main-btn" onclick="show('kor')">🎂 Életkor kalkulátor</button>
+    <button class="back-btn" onclick="show('menu')">Vissza</button>
+</div>
 
-    <div class="result-box" id="res">Eredmény: ?</div>
-    <button class="back-btn" onclick="alert('Vissza a főmenübe...')">Vissza</button>
+<div class="container hidden" id="romai">
+    <h2>Római számok</h2>
+    <input type="number" id="num-in" placeholder="Szám..." oninput="toRoman(this.value)">
+    <div id="rom-res-box" class="result-box" style="margin-top:15px">...</div>
+    <button class="back-btn" onclick="show('egyeb')">Vissza</button>
+</div>
+
+<div class="container hidden" id="hossz">
+    <h2>Hosszváltó</h2>
+    <div class="input-group"><input type="number" id="l1-val" oninput="convertLen(1)"><select id="l1-unit" onchange="convertLen(1)"><option value="1000">km</option><option value="1" selected>m</option><option value="0.01">cm</option></select></div>
+    <div class="input-group" style="margin-top:10px"><input type="number" id="l2-val" oninput="convertLen(2)"><select id="l2-unit" onchange="convertLen(1)"><option value="1000">km</option><option value="1">m</option><option value="0.01" selected>cm</option></select></div>
+    <button class="back-btn" onclick="show('egyeb')">Vissza</button>
+</div>
+
+<div class="container hidden" id="kor">
+    <h2>Életkor</h2>
+    <input type="date" id="bday" onchange="calcAge()">
+    <div class="result-box" id="age-res">Válassz dátumot</div>
+    <button class="back-btn" onclick="show('egyeb')">Vissza</button>
 </div>
 
 <script>
-    const mf = document.getElementById('mf');
-
-    // Gombok kezelése a math-field-hez
-    function add(val) {
-        if (val === 'clear') {
-            mf.value = "";
-        } else if (val === '^') {
-            mf.executeCommand(['insert', '^']);
-        } else {
-            mf.insert(val);
-        }
+    function show(id) { 
+        document.querySelectorAll('.container').forEach(c => c.classList.add('hidden')); 
+        document.getElementById(id).classList.remove('hidden'); 
+        if(id === 'egyenlet') setTimeout(resizeCanvas, 100);
     }
 
-    // Megoldó logika
-    function solveMath() {
-        const resBox = document.getElementById('res');
-        try {
-            // A MathLive LaTeX formátumot ad vissza, ezt átalakítjuk math.js számára
-            let latex = mf.value;
-            let cleanExpr = latex.replace(/\\frac{([^}]*)}{([^}]*)}/g, "($1/$2)")
-                                 .replace(/\\sqrt{([^}]*)}/g, "sqrt($1)")
-                                 .replace(/\\cdot/g, "*")
-                                 .replace(/{/g, "(").replace(/}/g, ")");
-            
-            if (!cleanExpr.includes('=')) {
-                resBox.innerText = "Hiba: '=' hiányzik!";
-                return;
-            }
+    // SZÁMOLÓGÉP
+    let expr = "";
+    function appendCalc(v) { expr += v; document.getElementById('calc-display').value = expr || "0"; }
+    function clearCalc() { expr = ""; document.getElementById('calc-display').value = "0"; }
+    function calculate() { try { expr = eval(expr.replace('×','*').replace('÷','/')).toString(); document.getElementById('calc-display').value = expr; } catch(e) { document.getElementById('calc-display').value = "Hiba"; } }
 
-            const parts = cleanExpr.split('=');
-            const equation = `(${parts[0]}) - (${parts[1]})`;
-            
-            // Newton-módszer a gyökkereséshez
-            const f = math.parse(equation).compile();
-            let x = 1;
-            for(let i=0; i<20; i++) {
+    // EGYENLET PRO
+    const mf = document.getElementById('mf');
+    function addE(v) { if(v==='clear') mf.value=""; else if(v==='^') mf.executeCommand(['insert','^']); else mf.insert(v); }
+    function solvePro() {
+        try {
+            let equation = mf.getValue("ascii-math").replace(/·/g,"*").replace(/−/g,"-");
+            const parts = equation.split('=');
+            const target = `(${parts[0]}) - (${parts[1]})`;
+            const f = math.parse(target).compile();
+            let x = 0;
+            for(let i=0; i<30; i++) {
                 let v = f.evaluate({x: x});
-                let der = (f.evaluate({x: x + 0.0001}) - v) / 0.0001;
+                let der = (f.evaluate({x: x+0.0001}) - v) / 0.0001;
                 x = x - v/der;
             }
-            resBox.innerText = "x ≈ " + Math.round(x * 1000) / 1000;
-        } catch (e) {
-            resBox.innerText = "Hiba az egyenletben!";
-        }
+            document.getElementById('eq-res').innerText = "x ≈ " + math.format(x, {precision: 5});
+        } catch(e) { document.getElementById('eq-res').innerText = "Hiba!"; }
     }
 
-    // --- S PEN / CANVAS LOGIKA ---
+    // S PEN CANVAS
     const canvas = document.getElementById('spenCanvas');
     const ctx = canvas.getContext('2d');
-    let drawing = false;
+    let draw = false;
+    function toggleCanvas() { document.getElementById('canvas-container').classList.toggle('hidden'); resizeCanvas(); }
+    function resizeCanvas() { canvas.width = canvas.parentElement.clientWidth; canvas.height = 200; ctx.strokeStyle="#0a84ff"; ctx.lineWidth=3; ctx.lineCap="round"; }
+    canvas.addEventListener('pointerdown', (e) => { draw=true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
+    canvas.addEventListener('pointermove', (e) => { if(draw) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } });
+    canvas.addEventListener('pointerup', () => draw=false);
 
-    function toggleCanvas() {
-        document.getElementById('canvas-container').classList.toggle('hidden');
-        resizeCanvas();
+    // RÓMAI, HOSSZ, KOR
+    function toRoman(num) {
+        if(!num || num < 1) return;
+        const map = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};
+        let res = "";
+        for(let i in map) { while(num >= map[i]) { res += i; num -= map[i]; } }
+        document.getElementById('rom-res-box').innerText = res;
     }
-
-    function resizeCanvas() {
-        canvas.width = canvas.parentElement.clientWidth;
-        canvas.height = 200;
-        ctx.strokeStyle = '#0a84ff';
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
+    function convertLen(s) {
+        const l1=document.getElementById('l1-val'), u1=document.getElementById('l1-unit'), l2=document.getElementById('l2-val'), u2=document.getElementById('l2-unit');
+        let b = (s===1) ? l1.value*u1.value : l2.value*u2.value;
+        if(s===1) l2.value = (b/u2.value).toFixed(2); else l1.value = (b/u1.value).toFixed(2);
     }
-
-    canvas.addEventListener('pointerdown', (e) => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
-    canvas.addEventListener('pointermove', (e) => {
-        if (!drawing) return;
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
-    });
-    canvas.addEventListener('pointerup', () => drawing = false);
-
-    function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    function calcAge() {
+        let b = new Date(document.getElementById('bday').value);
+        let diff = Math.floor((new Date() - b) / (1000*60*60*24));
+        document.getElementById('age-res').innerText = isNaN(diff) ? "Válassz dátumot" : diff.toLocaleString() + " napos vagy";
+    }
 </script>
-
 </body>
 </html>
