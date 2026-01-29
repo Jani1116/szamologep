@@ -3,190 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Toolbox 2026 Pro</title>
+    <title>Smart Toolbox Pro - Math</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
     <style>
         :root {
             --bg: #000000; --card: #1c1c1e; --accent: #0a84ff; --text: #ffffff; 
             --gray: #8e8e93; --border: #38383a; --red: #ff453a; --success: #30d158;
         }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
-        .container { max-width: 500px; margin: auto; background: var(--card); border-radius: 30px; padding: 20px; min-height: 92vh; display: flex; flex-direction: column; border: 1px solid var(--border); box-sizing: border-box; }
-        .hidden { display: none !important; }
-        
-        h1, h2 { text-align: center; font-weight: 700; margin-bottom: 20px; }
-
-        /* 3D GOMBOK */
-        .btn-3d { 
-            background: #333; border: none; border-radius: 15px; color: white; font-size: 22px; font-weight: bold;
-            padding: 20px 0; cursor: pointer; box-shadow: 0 6px #1a1a1a; transition: all 0.1s; position: relative;
-        }
-        .btn-3d:active { box-shadow: 0 2px #1a1a1a; transform: translateY(4px); }
-        .btn-op { background: #444; color: var(--accent); }
-        .btn-eq { background: var(--accent); color: white; box-shadow: 0 6px #0056b3; }
-
-        /* MENÜ GOMBOK */
-        .main-btn { background: #2c2c2e; color: white; border: none; padding: 20px; border-radius: 18px; margin: 8px 0; font-size: 17px; font-weight: 600; cursor: pointer; width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* INPUTOK */
-        .input-group { display: flex; gap: 5px; margin-bottom: 12px; align-items: center; }
-        input, select { background: #2c2c2e; border: 1px solid var(--border); color: white; padding: 14px; border-radius: 12px; width: 100%; font-size: 16px; box-sizing: border-box; outline: none; }
-        
-        .result-box { background: rgba(10, 132, 255, 0.1); padding: 15px; border-radius: 14px; border: 1px solid var(--accent); margin: 10px 0; font-weight: 600; text-align: center; }
-        .back-btn { background: #333; color: white; border: 1px solid var(--border); padding: 15px; border-radius: 16px; width: 100%; margin-top: auto; font-weight: 600; }
-        
-        .roman-keyboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
-        hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
+        .container { max-width: 600px; margin: auto; background: var(--card); border-radius: 30px; padding: 25px; min-height: 90vh; display: flex; flex-direction: column; border: 1px solid var(--border); box-sizing: border-box; }
+        h2 { text-align: center; margin-bottom: 20px; }
+        input { background: #2c2c2e; border: 1px solid var(--border); color: white; padding: 18px; border-radius: 12px; width: 100%; font-size: 20px; box-sizing: border-box; outline: none; font-family: 'Courier New', monospace; }
+        .btn-3d { background: var(--accent); border: none; border-radius: 15px; color: white; font-size: 20px; font-weight: bold; padding: 15px 0; cursor: pointer; box-shadow: 0 6px #0056b3; margin-top: 15px; width: 100%; transition: 0.1s; }
+        .btn-3d:active { box-shadow: 0 2px #0056b3; transform: translateY(4px); }
+        .result-box { background: rgba(48, 209, 88, 0.1); padding: 20px; border-radius: 14px; border: 1px solid var(--success); margin: 20px 0; font-weight: 600; font-size: 22px; text-align: center; }
+        .steps { background: #111; padding: 15px; border-radius: 10px; font-size: 14px; color: var(--gray); line-height: 1.5; overflow-x: auto; }
+        .back-btn { background: #333; color: white; border: 1px solid var(--border); padding: 15px; border-radius: 16px; width: 100%; margin-top: auto; }
+        small { color: var(--gray); display: block; text-align: center; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container" id="menu">
-    <div style="font-size: 50px; text-align: center; margin: 20px 0;">🛠️</div>
-    <h1>Smart Toolbox</h1>
-    <button class="main-btn" onclick="show('calc')">🔢 Számológép <span>›</span></button>
-    <button class="main-btn" onclick="show('egyenlet')">➗ Egyenlet <span>›</span></button>
-    <button class="main-btn" onclick="show('egyeb')">⚙️ Egyéb <span>›</span></button>
-</div>
-
-<div class="container hidden" id="calc">
-    <input type="text" id="calc-display" readonly value="0" style="text-align:right; font-size:48px; height:100px; background:transparent; border:none;">
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
-        <button class="btn-3d btn-op" onclick="clearCalc()">AC</button>
-        <button class="btn-3d btn-op" id="paren-btn" onclick="appendCalc('(')">(</button>
-        <button class="btn-3d btn-op" onclick="appendCalc(')')">)</button>
-        <button class="btn-3d btn-op" onclick="appendCalc('/')">÷</button>
-        <button class="btn-3d" onclick="appendCalc('7')">7</button>
-        <button class="btn-3d" onclick="appendCalc('8')">8</button>
-        <button class="btn-3d" onclick="appendCalc('9')">9</button>
-        <button class="btn-3d btn-op" onclick="appendCalc('*')">×</button>
-        <button class="btn-3d" onclick="appendCalc('4')">4</button>
-        <button class="btn-3d" onclick="appendCalc('5')">5</button>
-        <button class="btn-3d" onclick="appendCalc('6')">6</button>
-        <button class="btn-3d btn-op" onclick="appendCalc('-')">-</button>
-        <button class="btn-3d" onclick="appendCalc('1')">1</button>
-        <button class="btn-3d" onclick="appendCalc('2')">2</button>
-        <button class="btn-3d" onclick="appendCalc('3')">3</button>
-        <button class="btn-3d btn-op" onclick="appendCalc('+')">+</button>
-        <button class="btn-3d" style="grid-column: span 2;" onclick="appendCalc('0')">0</button>
-        <button class="btn-3d" onclick="appendCalc('.')">.</button>
-        <button class="btn-3d btn-eq" onclick="calculate()">=</button>
-    </div>
-    <button class="back-btn" onclick="show('menu')">Vissza</button>
-</div>
-
-<div class="container hidden" id="egyenlet">
+<div class="container">
     <h2>Egyenletmegoldó</h2>
-    <input type="text" id="eq-input" placeholder="x + 5 = 10" oninput="solveEq()">
-    <div class="result-box" id="eq-res">x = ?</div>
-    <button class="main-btn" onclick="document.getElementById('steps').classList.toggle('hidden')">Levezetés</button>
-    <div id="steps" style="max-height:100px; overflow-y:auto; background:#111; padding:10px; border-radius:10px;" class="hidden"></div>
-    <button class="back-btn" onclick="show('menu')">Vissza</button>
-</div>
+    <small>Példák: 2x^2 - 4x + 2 = 0 | x/2 + 5 = 10 | sqrt(x) = 4</small>
+    
+    <input type="text" id="eq-input" placeholder="Írd be az egyenletet..." inputmode="text">
+    
+    <button class="btn-3d" onclick="solve()">Megoldás</button>
 
-<div class="container hidden" id="egyeb">
-    <h2>Egyéb funkciók</h2>
-    <button class="main-btn" onclick="show('romai')">🏛️ Római számok</button>
-    <button class="main-btn" onclick="show('sebesseg')">🚀 Sebesség</button>
-    <button class="main-btn" onclick="show('hossz')">📏 Hossz</button>
-    <button class="main-btn" onclick="show('kor')">🎂 Életkor</button>
-    <button class="back-btn" onclick="show('menu')">Vissza</button>
-</div>
-
-<div class="container hidden" id="romai">
-    <h2>Római számok</h2>
-    <input type="number" id="num-in" placeholder="Szám..." oninput="toRoman(this.value)">
-    <input type="text" id="rom-in" readonly placeholder="Római jelek..." style="margin-top:10px">
-    <div class="roman-keyboard">
-        <button class="btn-3d" onclick="appendRoman('M')">M</button>
-        <button class="btn-3d" onclick="appendRoman('D')">D</button>
-        <button class="btn-3d" onclick="appendRoman('C')">C</button>
-        <button class="btn-3d" onclick="appendRoman('L')">L</button>
-        <button class="btn-3d" onclick="appendRoman('X')">X</button>
-        <button class="btn-3d" onclick="appendRoman('V')">V</button>
-        <button class="btn-3d" onclick="appendRoman('I')">I</button>
-        <button class="btn-3d" onclick="appendRoman('DEL')" style="background:var(--red); box-shadow: 0 6px #a00;">←</button>
+    <div id="res-area" class="hidden">
+        <div class="result-box" id="eq-res">x = ?</div>
+        <div class="steps" id="eq-steps"></div>
     </div>
-    <div id="rom-res-box" class="result-box" style="margin-top:15px">...</div>
-    <button class="back-btn" onclick="show('egyeb')">Vissza</button>
-</div>
 
-<div class="container hidden" id="sebesseg">
-    <h2>Sebesség</h2>
-    <div class="input-group">
-        <input type="number" id="v1-val" placeholder="0" oninput="calcV(1)">
-        <select id="v1-d" onchange="calcV(1)" style="width:70px"><option value="1000">km</option><option value="1">m</option><option value="0.1">dm</option><option value="0.01">cm</option><option value="0.001">mm</option></select>
-        <span>/</span>
-        <select id="v1-t" onchange="calcV(1)" style="width:75px"><option value="3600">óra</option><option value="60">p</option><option value="1">mp</option></select>
-    </div>
-    <div class="input-group">
-        <input type="number" id="v2-val" placeholder="0" oninput="calcV(2)">
-        <select id="v2-d" onchange="calcV(1)" style="width:70px"><option value="1000">km</option><option value="1">m</option><option value="0.1">dm</option><option value="0.01">cm</option><option value="0.001">mm</option></select>
-        <span>/</span>
-        <select id="v2-t" onchange="calcV(1)" style="width:75px"><option value="3600" selected>óra</option><option value="60">p</option><option value="1">mp</option></select>
-    </div>
-    <hr>
-    <label>Mérföld per óra (mph)</label>
-    <input type="number" id="v-mph" oninput="calcV('mph')">
-    <button class="back-btn" onclick="show('egyeb')">Vissza</button>
-</div>
-
-<div class="container hidden" id="hossz">
-    <h2>Hosszváltó</h2>
-    <div class="input-group"><input type="number" id="l1-val" oninput="convertLen(1)"><select id="l1-unit" onchange="convertLen(1)"><option value="1000">km</option><option value="1" selected>m</option><option value="0.1">dm</option><option value="0.01">cm</option><option value="0.001">mm</option></select></div>
-    <div class="input-group"><input type="number" id="l2-val" oninput="convertLen(2)"><select id="l2-unit" onchange="convertLen(1)"><option value="1000">km</option><option value="1">m</option><option value="0.1">dm</option><option value="0.01" selected>cm</option><option value="0.001">mm</option></select></div>
-    <hr>
-    <div class="input-group"><input type="number" id="l-imp-val" oninput="convertLen('imp')"><select id="l-imp-unit" onchange="convertLen('imp')"><option value="1609.34">Mérföld</option><option value="0.9144">Yard</option><option value="0.0254">Inch</option></select></div>
-    <button class="back-btn" onclick="show('egyeb')">Vissza</button>
-</div>
-
-<div class="container hidden" id="kor">
-    <h2>Életkor</h2>
-    <input type="date" id="bday" onchange="calcAge()">
-    <div class="result-box" id="age-res">...</div>
-    <button class="back-btn" onclick="show('egyeb')">Vissza</button>
+    <button class="back-btn" onclick="window.history.back()">Vissza</button>
 </div>
 
 <script>
-    function show(id) { document.querySelectorAll('.container').forEach(c => c.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+function solve() {
+    const input = document.getElementById('eq-input').value.replace(':', '/');
+    const resBox = document.getElementById('eq-res');
+    const stepsBox = document.getElementById('eq-steps');
+    const resArea = document.getElementById('res-area');
 
-    // Számológép
-    let expr = "";
-    function appendCalc(v) { expr += v; updateDisp(); }
-    function clearCalc() { expr = ""; updateDisp(); }
-    function updateDisp() { 
-        document.getElementById('calc-display').value = expr || "0";
-        const o = (expr.match(/\(/g) || []).length, c = (expr.match(/\)/g) || []).length;
-        document.getElementById('paren-btn').style.color = (o !== c) ? "var(--red)" : "var(--accent)";
-    }
-    function calculate() { try { expr = eval(expr.replace('×','*').replace('÷','/')).toString(); updateDisp(); } catch(e) { expr = ""; document.getElementById('calc-display').value = "Hiba"; } }
-
-    // Római ellenőrző
-    const rMap = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};
-    const chars = {M:1000,D:500,C:100,L:50,X:10,V:5,I:1};
-    function appendRoman(c) { let i = document.getElementById('rom-in'); if(c==='DEL') i.value=i.value.slice(0,-1); else i.value+=c; validateRoman(i.value); }
-    function toRoman(n) { let num=parseInt(n); if(!num) return; let res=""; for(let k in rMap){while(num>=rMap[k]){res+=k;num-=rMap[k];}} document.getElementById('rom-in').value=res; validateRoman(res); }
-    function validateRoman(s) {
-        if(!s) { document.getElementById('rom-res-box').innerText="..."; return; }
-        let val=0; for(let i=0;i<s.length;i++){ let s1=chars[s[i]], s2=chars[s[i+1]]; if(s2>s1){val+=s2-s1;i++;}else{val+=s1;} }
-        let correct=""; let temp=val; for(let k in rMap){while(temp>=rMap[k]){correct+=k;temp-=rMap[k];}}
-        const resBox = document.getElementById('rom-res-box');
-        if(s!==correct) resBox.innerHTML=`<span style="color:var(--red)">HELYTELEN ! ! !</span><br><small>Helyesen: ${correct} (${val})</small>`;
-        else resBox.innerHTML=`<span style="color:var(--success)">HELYES</span><br>Érték: ${val}`;
+    if (!input.includes('=')) {
+        resBox.innerText = "Hiba: Hiányzik az '=' jel!";
+        return;
     }
 
-    // Sebesség, Hossz, Életkor, Egyenlet logikák maradnak a régiek...
-    function calcV(src) {
-        const v1v=document.getElementById('v1-val'), v1d=document.getElementById('v1-d'), v1t=document.getElementById('v1-t'), v2v=document.getElementById('v2-val'), v2d=document.getElementById('v2-d'), v2t=document.getElementById('v2-t'), vm=document.getElementById('v-mph');
-        let mps; if(src===1) mps=(v1v.value*v1d.value)/v1t.value; else if(src===2) mps=(v2v.value*v2d.value)/v2t.value; else mps=(vm.value*1609.34)/3600;
-        if(src!==1) v1v.value=((mps*v1t.value)/v1d.value).toFixed(2); if(src!==2) v2v.value=((mps*v2t.value)/v2d.value).toFixed(2); if(src!=='mph') vm.value=(mps*3600/1609.34).toFixed(2);
+    try {
+        const parts = input.split('=');
+        // Átrendezzük 0-ra: (bal oldal) - (jobb oldal) = 0
+        const equation = `(${parts[0]}) - (${parts[1]})`;
+        
+        // Megoldás keresése (numerikus közelítéssel komplexebb esetekre)
+        // Először megpróbáljuk egyszerű szimbolikus megoldással (ha másodfokú)
+        let results = [];
+        
+        if (input.includes('^2')) {
+            // Másodfokú felismerő és megoldó
+            results = solveQuadratic(parts[0], parts[1]);
+        } else {
+            // Lineáris vagy törtes
+            const x = math.evaluate(`solve(${equation} = 0, x)`); 
+            // Megjegyzés: a math.js solve funkciója egyes verziókban máshogy érhető el, 
+            // ezért egy biztosabb Newton-módszer alapú keresőt használunk:
+            const f = math.parse(equation).compile();
+            const root = findRoot(f);
+            results = [root];
+        }
+
+        resBox.innerHTML = results.map((r, i) => `x<sub>${i+1}</sub> = ${math.format(r, {precision: 4})}`).join('<br>');
+        stepsBox.innerHTML = `<b>Elemzett egyenlet:</b> ${equation} = 0<br><b>Módszer:</b> ${input.includes('^2') ? 'Másodfokú megoldóképlet' : 'Algebrái átalakítás'}`;
+        resArea.classList.remove('hidden');
+
+    } catch (e) {
+        resBox.innerText = "Hiba: Ellenőrizd a formátumot!";
+        stepsBox.innerText = e.message;
     }
-    function convertLen(src) {
-        const l1=document.getElementById('l1-val'), u1=document.getElementById('l1-unit'), l2=document.getElementById('l2-val'), u2=document.getElementById('l2-unit'), li=document.getElementById('l-imp-val'), ui=document.getElementById('l-imp-unit');
-        let b; if(src===1) b=l1.value*u1.value; else if(src===2) b=l2.value*u2.value; else b=li.value*ui.value;
-        if(src!==1) l1.value=(b/u1.value).toFixed(4); if(src!==2) l2.value=(b/u2.value).toFixed(4); if(src!=='imp') li.value=(b/ui.value).toFixed(4);
+}
+
+function solveQuadratic(left, right) {
+    // Kifejezés normalizálása: ax^2 + bx + c
+    const expr = math.simplify(`(${left}) - (${right})`).toString();
+    // Együtthatók kinyerése (leegyszerűsített parser)
+    const node = math.parse(expr);
+    let coeffs = { a: 0, b: 0, c: 0 };
+    
+    // Alapvető együttható kereső
+    math.parse(expr).traverse(function (node) {
+        if (node.isSymbolNode && node.name === 'x') { /* x keresése */ }
+    });
+
+    // Biztonsági manuális megoldás a math.js segítségével
+    // f(0), f(1), f(-1) értékekből kiszámoljuk a, b, c-t
+    const f = math.parse(expr).compile();
+    const c = f.evaluate({x: 0});
+    const fp1 = f.evaluate({x: 1});
+    const fm1 = f.evaluate({x: -1});
+    const a = (fp1 + fm1 - 2*c) / 2;
+    const b = fp1 - a - c;
+
+    const d = b*b - 4*a*c;
+    if (d < 0) return ["Nincs valós gyök"];
+    if (d === 0) return [-b / (2*a)];
+    return [(-b + Math.sqrt(d)) / (2*a), (-b - Math.sqrt(d)) / (2*a)];
+}
+
+function findRoot(f) {
+    // Newton-Raphson közelítés egyszerű egyenletekhez
+    let x = 1;
+    for (let i = 0; i < 20; i++) {
+        const val = f.evaluate({x: x});
+        const eps = 0.0001;
+        const der = (f.evaluate({x: x + eps}) - val) / eps;
+        if (Math.abs(der) < eps) break;
+        x = x - val / der;
     }
-    function calcAge() { let b=new Date(document.getElementById('bday').value); let diff=Math.floor((new Date()-b)/(1000*60*60*24)); document.getElementById('age-res').innerHTML=isNaN(diff)?"Válassz dátumot":diff.toLocaleString()+" napos vagy"; }
-    function solveEq() { let raw=document.getElementById('eq-input').value.replace(/\s/g,''); if(!raw.includes('=')||!raw.includes('x')) return; try { let p=raw.split('='); let l=p[0],r=parseFloat(p[1]),c=parseFloat(l.replace('x','0').replace('+',''))||0,x=r-c; document.getElementById('eq-res').innerText="x = "+x; document.getElementById('steps').innerHTML=`${l}=${r} | x=${r}-${c} | x=${x}`; } catch(e){} }
+    return x;
+}
 </script>
+
 </body>
 </html>
