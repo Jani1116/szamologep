@@ -15,13 +15,11 @@
         h1, h2 { text-align: center; font-weight: 700; margin-bottom: 20px; }
         .hidden { display: none !important; }
         
-        /* Gombok */
         .main-btn { background: #2c2c2e; color: white; border: none; padding: 20px; border-radius: 18px; margin: 8px 0; font-size: 17px; font-weight: 600; cursor: pointer; width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .main-btn:active { background: #3a3a3c; transform: scale(0.98); }
         .back-btn { background: #333; color: white; border: 1px solid var(--border); padding: 15px; border-radius: 16px; width: 100%; margin-top: auto; font-weight: 600; cursor: pointer; }
 
-        /* Inputok és választók */
-        .input-group { display: flex; gap: 10px; margin-bottom: 12px; }
+        .input-group { display: flex; gap: 5px; margin-bottom: 12px; align-items: center; }
         input, select { background: #2c2c2e; border: 1px solid var(--border); color: white; padding: 14px; border-radius: 12px; width: 100%; font-size: 16px; box-sizing: border-box; outline: none; }
         input:focus { border-color: var(--accent); }
         
@@ -30,6 +28,11 @@
         
         hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
         label { display: block; margin: 0 0 5px 5px; font-size: 13px; color: var(--gray); text-transform: uppercase; }
+
+        /* Római panel */
+        .roman-keyboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; background: #2c2c2e; padding: 15px; border-radius: 18px; margin-top: 10px; }
+        .roman-key { background: #444; border: none; color: white; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .roman-key:active { background: var(--accent); }
     </style>
 </head>
 <body>
@@ -40,124 +43,108 @@
     <button class="main-btn" onclick="show('calc')">🔢 Számológép <span>›</span></button>
     <button class="main-btn" onclick="show('egyenlet')">➗ Egyenlet <span>›</span></button>
     <button class="main-btn" onclick="show('egyeb')">⚙️ Egyéb <span>›</span></button>
-    <div style="text-align: center; color: var(--gray); font-size: 12px; margin-top: auto;">V2.0 | 2026 Pro</div>
 </div>
 
 <div class="container hidden" id="calc">
     <h2>Számológép</h2>
     <input type="text" id="calc-display" readonly value="0" style="text-align:right; font-size:40px; height:80px; background:transparent; border:none;">
-    <p style="text-align:center; color:var(--gray);">Fejlesztés alatt...</p>
     <button class="back-btn" onclick="show('menu')">Vissza</button>
 </div>
 
 <div class="container hidden" id="egyenlet">
     <h2>Egyenletmegoldó</h2>
-    <label>Egyenlet (pl: 6+x=20)</label>
     <input type="text" id="eq-input" placeholder="x + 5 = 10" oninput="solveEq()">
-    <label>Eredmény</label>
     <div class="result-box" id="eq-res">x = ?</div>
-    <button class="main-btn" onclick="document.getElementById('steps').classList.toggle('hidden')">Levezetés megnyitása</button>
+    <button class="main-btn" onclick="document.getElementById('steps').classList.toggle('hidden')">Levezetés</button>
     <div id="steps" class="scroll-area hidden"></div>
     <button class="back-btn" onclick="show('menu')">Vissza</button>
 </div>
 
 <div class="container hidden" id="egyeb">
     <h2>Egyéb funkciók</h2>
-    <button class="main-btn" onclick="show('romai')">🏛️ Római számok <span>›</span></button>
-    <button class="main-btn" onclick="show('sebesseg')">🚀 Sebesség <span>›</span></button>
-    <button class="main-btn" onclick="show('hossz')">📏 Hossz <span>›</span></button>
-    <button class="main-btn" onclick="show('kor')">🎂 Életkor <span>›</span></button>
+    <button class="main-btn" onclick="show('romai')">🏛️ Római számok</button>
+    <button class="main-btn" onclick="show('sebesseg')">🚀 Sebesség</button>
+    <button class="main-btn" onclick="show('hossz')">📏 Hossz</button>
+    <button class="main-btn" onclick="show('kor')">🎂 Életkor</button>
     <button class="back-btn" onclick="show('menu')">Vissza</button>
 </div>
 
 <div class="container hidden" id="romai">
     <h2>Római számok</h2>
     <label>Arab számok</label>
-    <input type="number" id="num-in" placeholder="pl. 251" oninput="toRoman(this.value)">
+    <input type="number" id="num-in" placeholder="Szám..." oninput="toRoman(this.value)">
     <label>Római jelek</label>
-    <input type="text" id="rom-in" placeholder="pl. CCLI" oninput="fromRoman(this.value.toUpperCase())">
-    <div id="rom-desc" class="result-box" style="font-size: 14px; text-align: center; border-style: dashed;">...</div>
-    <button class="back-btn" onclick="show('egyeb')">Vissza</button>
-</div>
-
-<div class="container hidden" id="kor">
-    <h2>Életkor</h2>
-    <label>Születésnap</label>
-    <input type="date" id="bday" onchange="calcAge()">
-    <div class="result-box" id="age-res" style="text-align:center; font-size:22px; margin-top:20px;">Válassz dátumot</div>
+    <input type="text" id="rom-in" readonly placeholder="Kattints a jelekért...">
+    <div class="roman-keyboard" id="roman-kbd">
+        <button class="roman-key" onclick="appendRoman('M')">M</button>
+        <button class="roman-key" onclick="appendRoman('D')">D</button>
+        <button class="roman-key" onclick="appendRoman('C')">C</button>
+        <button class="roman-key" onclick="appendRoman('L')">L</button>
+        <button class="roman-key" onclick="appendRoman('X')">X</button>
+        <button class="roman-key" onclick="appendRoman('V')">V</button>
+        <button class="roman-key" onclick="appendRoman('I')">I</button>
+        <button class="roman-key" onclick="appendRoman('DEL')" style="background:#ff453a">←</button>
+    </div>
+    <div id="rom-desc" class="result-box" style="text-align: center; border-style: dashed; margin-top:15px;">...</div>
     <button class="back-btn" onclick="show('egyeb')">Vissza</button>
 </div>
 
 <div class="container hidden" id="sebesseg">
-    <h2>Sebességváltó</h2>
+    <h2>Sebesség</h2>
     <div class="input-group">
-        <input type="number" id="v1-val" placeholder="0" oninput="convertSpeed(1)">
-        <select id="v1-unit" onchange="convertSpeed(1)">
-            <option value="1">km/h</option>
-            <option value="0.2777">m/s</option>
-            <option value="16.666">m/min</option>
-            <option value="0.0166">km/min</option>
-        </select>
+        <input type="number" id="v1-val" placeholder="0" oninput="calcV(1)">
+        <select id="v1-d" onchange="calcV(1)" style="width:70px"><option value="1000">km</option><option value="1">m</option><option value="0.1">dm</option><option value="0.01">cm</option><option value="0.001">mm</option></select>
+        <span>/</span>
+        <select id="v1-t" onchange="calcV(1)" style="width:75px"><option value="3600">óra</option><option value="60">p</option><option value="1">mp</option></select>
     </div>
     <div class="input-group">
-        <input type="number" id="v2-val" placeholder="0" oninput="convertSpeed(2)">
-        <select id="v2-unit" onchange="convertSpeed(1)">
-            <option value="1">km/h</option>
-            <option value="0.2777" selected>m/s</option>
-            <option value="16.666">m/min</option>
-            <option value="0.0166">km/min</option>
-        </select>
+        <input type="number" id="v2-val" placeholder="0" oninput="calcV(2)">
+        <select id="v2-d" onchange="calcV(1)" style="width:70px"><option value="1000">km</option><option value="1">m</option><option value="0.1">dm</option><option value="0.01">cm</option><option value="0.001">mm</option></select>
+        <span>/</span>
+        <select id="v2-t" onchange="calcV(1)" style="width:75px"><option value="3600" selected>óra</option><option value="60">p</option><option value="1">mp</option></select>
     </div>
     <hr>
     <label>Mérföld per óra (mph)</label>
-    <input type="number" id="v-mph" placeholder="0" oninput="convertSpeed('mph')">
+    <input type="number" id="v-mph" oninput="calcV('mph')">
     <button class="back-btn" onclick="show('egyeb')">Vissza</button>
 </div>
 
 <div class="container hidden" id="hossz">
     <h2>Hosszváltó</h2>
     <div class="input-group">
-        <input type="number" id="l1-val" placeholder="0" oninput="convertLen(1)">
-        <select id="l1-unit" onchange="convertLen(1)">
-            <option value="1000">km</option>
-            <option value="1" selected>m</option>
-            <option value="0.1">dm</option>
-            <option value="0.01">cm</option>
-            <option value="0.001">mm</option>
-        </select>
+        <input type="number" id="l1-val" oninput="convertLen(1)">
+        <select id="l1-unit" onchange="convertLen(1)"><option value="1000">km</option><option value="1" selected>m</option><option value="0.1">dm</option><option value="0.01">cm</option><option value="0.001">mm</option></select>
     </div>
     <div class="input-group">
-        <input type="number" id="l2-val" placeholder="0" oninput="convertLen(2)">
-        <select id="l2-unit" onchange="convertLen(1)">
-            <option value="1000">km</option>
-            <option value="1">m</option>
-            <option value="0.1">dm</option>
-            <option value="0.01" selected>cm</option>
-            <option value="0.001">mm</option>
-        </select>
+        <input type="number" id="l2-val" oninput="convertLen(2)">
+        <select id="l2-unit" onchange="convertLen(1)"><option value="1000">km</option><option value="1">m</option><option value="0.1">dm</option><option value="0.01" selected>cm</option><option value="0.001">mm</option></select>
     </div>
     <hr>
-    <label>Angolszász mérték</label>
     <div class="input-group">
-        <input type="number" id="l-imp-val" placeholder="0" oninput="convertLen('imp')">
-        <select id="l-imp-unit" onchange="convertLen('imp')">
-            <option value="1609.34">Mérföld</option>
-            <option value="0.9144">Yard</option>
-            <option value="0.0254">Inch</option>
-        </select>
+        <input type="number" id="l-imp-val" oninput="convertLen('imp')">
+        <select id="l-imp-unit" onchange="convertLen('imp')"><option value="1609.34">Mérföld</option><option value="0.9144">Yard</option><option value="0.0254">Inch</option></select>
     </div>
     <button class="back-btn" onclick="show('egyeb')">Vissza</button>
 </div>
 
-<script>
-    // Navigáció
-    function show(id) {
-        document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-    }
+<div class="container hidden" id="kor">
+    <h2>Életkor</h2>
+    <input type="date" id="bday" onchange="calcAge()">
+    <div class="result-box" id="age-res" style="text-align:center;">Válassz dátumot</div>
+    <button class="back-btn" onclick="show('egyeb')">Vissza</button>
+</div>
 
-    // Római számok
-    const rMap = {M:1000,D:500,C:100,L:50,X:10,V:5,I:1};
+<script>
+    function show(id) { document.querySelectorAll('.container').forEach(c => c.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+
+    // Római Logika
+    const rm = {M:1000,D:500,C:100,L:50,X:10,V:5,I:1};
+    function appendRoman(char) {
+        let inp = document.getElementById('rom-in');
+        if(char === 'DEL') inp.value = inp.value.slice(0, -1);
+        else inp.value += char;
+        fromRoman(inp.value);
+    }
     function toRoman(n) {
         if(!n) return; n = parseInt(n); let res = '';
         const m = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};
@@ -168,64 +155,62 @@
     function fromRoman(s) {
         let res = 0;
         for (let i = 0; i < s.length; i++) {
-            let s1 = rMap[s[i]], s2 = rMap[s[i+1]];
-            if (s2 > s1) { res += s2 - s1; i++; } else { res += s1; }
+            let s1 = rm[s[i]], s2 = rm[s[i+1]];
+            if (s2 > s1) { res += s2 - s1; i++; } else { res += s1 || 0; }
         }
-        document.getElementById('num-in').value = res;
+        document.getElementById('num-in').value = res || '';
         explainR(s);
     }
     function explainR(s) {
         let used = [...new Set(s.split(''))];
-        document.getElementById('rom-desc').innerHTML = used.map(c => `${c}=${rMap[c]}`).join(' | ');
+        document.getElementById('rom-desc').innerHTML = used.length ? used.map(c => `${c}=${rm[c]}`).join(' | ') : '...';
     }
 
-    // Életkor
-    function calcAge() {
-        let b = new Date(document.getElementById('bday').value);
-        let diff = Math.floor((new Date() - b) / (1000 * 60 * 60 * 24));
-        document.getElementById('age-res').innerHTML = isNaN(diff) ? "Válassz dátumot" : `<span style="color:var(--accent)">${diff.toLocaleString()}</span> napos vagy`;
-    }
-
-    // Sebesség
-    function convertSpeed(src) {
-        const v1 = document.getElementById('v1-val'), u1 = document.getElementById('v1-unit');
-        const v2 = document.getElementById('v2-val'), u2 = document.getElementById('v2-unit');
+    // Sebesség Logika
+    function calcV(src) {
+        const v1v = document.getElementById('v1-val'), v1d = document.getElementById('v1-d'), v1t = document.getElementById('v1-t');
+        const v2v = document.getElementById('v2-val'), v2d = document.getElementById('v2-d'), v2t = document.getElementById('v2-t');
         const vm = document.getElementById('v-mph');
-        let base;
-        if(src === 1) base = v1.value * u1.value;
-        else if(src === 2) base = v2.value * u2.value;
-        else base = vm.value * 1.609;
-        if(src !== 1) v1.value = (base / u1.value).toFixed(2);
-        if(src !== 2) v2.value = (base / u2.value).toFixed(2);
-        if(src !== 'mph') vm.value = (base / 1.609).toFixed(2);
+        let mps; // Alap: méter/másodperc
+        if(src === 1) mps = (v1v.value * v1d.value) / v1t.value;
+        else if(src === 2) mps = (v2v.value * v2d.value) / v2t.value;
+        else mps = (vm.value * 1609.34) / 3600;
+
+        if(src !== 1) v1v.value = ((mps * v1t.value) / v1d.value).toFixed(2);
+        if(src !== 2) v2v.value = ((mps * v2t.value) / v2d.value).toFixed(2);
+        if(src !== 'mph') vm.value = (mps * 3600 / 1609.34).toFixed(2);
     }
 
-    // Hossz
     function convertLen(src) {
         const l1 = document.getElementById('l1-val'), u1 = document.getElementById('l1-unit');
         const l2 = document.getElementById('l2-val'), u2 = document.getElementById('l2-unit');
         const li = document.getElementById('l-imp-val'), ui = document.getElementById('l-imp-unit');
-        let base;
-        if(src === 1) base = l1.value * u1.value;
-        else if(src === 2) base = l2.value * u2.value;
-        else base = li.value * ui.value;
-        if(src !== 1) l1.value = (base / u1.value).toFixed(4);
-        if(src !== 2) l2.value = (base / u2.value).toFixed(4);
-        if(src !== 'imp') li.value = (base / ui.value).toFixed(4);
+        let b;
+        if(src === 1) b = l1.value * u1.value;
+        else if(src === 2) b = l2.value * u2.value;
+        else b = li.value * ui.value;
+        if(src !== 1) l1.value = (b / u1.value).toFixed(4);
+        if(src !== 2) l2.value = (b / u2.value).toFixed(4);
+        if(src !== 'imp') li.value = (b / ui.value).toFixed(4);
     }
 
-    // Egyenlet (Lineáris)
+    function calcAge() {
+        let b = new Date(document.getElementById('bday').value);
+        let diff = Math.floor((new Date() - b) / (1000 * 60 * 60 * 24));
+        document.getElementById('age-res').innerHTML = isNaN(diff) ? "Válassz dátumot" : diff.toLocaleString() + " napos vagy";
+    }
+
     function solveEq() {
         let raw = document.getElementById('eq-input').value.replace(/\s/g, '');
         if(!raw.includes('=') || !raw.includes('x')) return;
         try {
-            let parts = raw.split('=');
-            let left = parts[0], right = parseFloat(parts[1]);
-            let constant = parseFloat(left.replace('x', '0').replace('+', '')) || 0;
-            let x = right - constant;
+            let p = raw.split('=');
+            let l = p[0], r = parseFloat(p[1]);
+            let c = parseFloat(l.replace('x', '0').replace('+', '')) || 0;
+            let x = r - c;
             document.getElementById('eq-res').innerText = "x = " + x;
-            document.getElementById('steps').innerHTML = `Kiindulás: ${left} = ${right}<br>Rendezés: x = ${right} - (${constant})<br><b>Eredmény: x = ${x}</b>`;
-        } catch(e) { document.getElementById('eq-res').innerText = "Hibás formátum"; }
+            document.getElementById('steps').innerHTML = `Levezetés: ${l}=${r} | x=${r}-${c} | x=${x}`;
+        } catch(e) {}
     }
 </script>
 </body>
