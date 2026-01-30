@@ -29,7 +29,7 @@
 
         .main-btn { background: #2c2c2e; color: white; border: none; padding: 20px; border-radius: 18px; margin: 8px 0; font-size: 17px; font-weight: 600; cursor: pointer; width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         
-        input, select { background: #2c2c2e; border: 1px solid var(--border); color: white; padding: 14px; border-radius: 12px; width: 100%; font-size: 16px; box-sizing: border-box; outline: none; margin-bottom: 5px; }
+        input, select { background: #2c2c2e; border: 1px solid var(--border); color: white; padding: 14px; border-radius: 12px; width: 100%; font-size: 16px; box-sizing: border-box; outline: none; }
         
         /* EGYENLET SPECIÁLIS */
         math-field { font-size: 26px; background: #2c2c2e; border: 1px solid var(--accent); border-radius: 12px; color: white; padding: 15px; margin-bottom: 10px; width: 100%; outline: none; }
@@ -41,7 +41,9 @@
         .result-box { background: rgba(10, 132, 255, 0.1); padding: 15px; border-radius: 14px; border: 1px solid var(--accent); margin: 10px 0; font-weight: 600; text-align: center; min-height: 20px; }
         .back-btn { background: #333; color: white; border: 1px solid var(--border); padding: 15px; border-radius: 16px; width: 100%; margin-top: auto; font-weight: 600; }
         hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
-        .label-sm { font-size: 12px; color: var(--gray); margin-left: 5px; }
+        .input-group { display: flex; gap: 5px; margin-bottom: 10px; }
+        .input-group input { flex: 2; }
+        .input-group select { flex: 1; }
     </style>
 </head>
 <body>
@@ -111,10 +113,8 @@
 
 <div class="container hidden" id="romai">
     <h2>Római számok</h2>
-    <div class="label-sm">Arab szám:</div>
-    <input type="number" id="rom-arab-in" placeholder="Szám..." oninput="romanFromArab(this.value)">
-    <div class="label-sm" style="margin-top:10px">Római billentyűk:</div>
-    <div class="calc-grid" style="margin-bottom:10px">
+    <input type="number" id="rom-arab-in" placeholder="Arab szám..." oninput="romanFromArab(this.value)">
+    <div class="calc-grid" style="margin:15px 0">
         <button class="btn-3d" onclick="addRom('M')">M</button><button class="btn-3d" onclick="addRom('D')">D</button><button class="btn-3d" onclick="addRom('C')">C</button><button class="btn-3d btn-op" onclick="clearRom()">AC</button>
         <button class="btn-3d" onclick="addRom('L')">L</button><button class="btn-3d" onclick="addRom('X')">X</button><button class="btn-3d" onclick="addRom('V')">V</button><button class="btn-3d" onclick="addRom('I')">I</button>
     </div>
@@ -124,16 +124,19 @@
 
 <div class="container hidden" id="hossz">
     <h2>Hosszváltó</h2>
-    <div id="unit-list">
-        <div class="label-sm">Kilométer (km)</div><input type="number" id="u_km" oninput="unitSync('km')">
-        <div class="label-sm">Méter (m)</div><input type="number" id="u_m" oninput="unitSync('m')">
-        <div class="label-sm">Deciméter (dm)</div><input type="number" id="u_dm" oninput="unitSync('dm')">
-        <div class="label-sm">Centiméter (cm)</div><input type="number" id="u_cm" oninput="unitSync('cm')">
-        <div class="label-sm">Milliméter (mm)</div><input type="number" id="u_mm" oninput="unitSync('mm')">
-        <hr>
-        <div class="label-sm">Mérföld (mi)</div><input type="number" id="u_mi" oninput="unitSync('mi')">
-        <div class="label-sm">Yard (yd)</div><input type="number" id="u_yd" oninput="unitSync('yd')">
-        <div class="label-sm">Inch (in)</div><input type="number" id="u_in" oninput="unitSync('in')">
+    <div class="input-group">
+        <input type="number" id="l1-val" oninput="convertLen(1)">
+        <select id="l1-unit" onchange="convertLen(1)">
+            <option value="1000">km</option><option value="1" selected>m</option><option value="0.1">dm</option><option value="0.01">cm</option><option value="0.001">mm</option>
+            <option value="1609.344">mi</option><option value="0.9144">yd</option><option value="0.0254">in</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <input type="number" id="l2-val" oninput="convertLen(2)">
+        <select id="l2-unit" onchange="convertLen(1)">
+            <option value="1000">km</option><option value="1">m</option><option value="0.1">dm</option><option value="0.01" selected>cm</option><option value="0.001">mm</option>
+            <option value="1609.344">mi</option><option value="0.9144">yd</option><option value="0.0254">in</option>
+        </select>
     </div>
     <button class="back-btn" onclick="show('egyeb')">Vissza</button>
 </div>
@@ -152,7 +155,7 @@
         if(id === 'egyenlet') setTimeout(resizeCanvas, 100);
     }
 
-    // SZÁMOLÓGÉP
+    // SZÁMOLÓGÉP (Javított formázással és új gombokkal)
     let expr = "";
     function formatNum(n) {
         if(isNaN(n) || n === Infinity) return n;
@@ -167,7 +170,7 @@
     function appendCalc(v) { expr += v; updateCalcDisp(); }
     function backspace() { expr = expr.slice(0, -1); updateCalcDisp(); }
     function clearCalc() { expr = ""; updateCalcDisp(); }
-    function nthRoot() { let n = prompt("Gyök foka (pl. 2, 3):", "2"); if(n) appendCalc(`^(1/${n})`); }
+    function nthRoot() { let n = prompt("Gyök foka:", "2"); if(n) appendCalc(`^(1/${n})`); }
     function calculate() { 
         try { 
             let res = math.evaluate(expr.replace('×','*').replace('÷','/'));
@@ -205,7 +208,7 @@
     canvas.addEventListener('pointermove', (e) => { if(draw) { ctx.lineWidth = (e.pressure > 0) ? e.pressure * 10 : 3; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } });
     canvas.addEventListener('pointerup', () => draw=false);
 
-    // RÓMAI SZÁMOK
+    // RÓMAI SZÁMOK (Oda-vissza validálva)
     const romMap = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};
     let currentRom = "";
     function romanFromArab(num) {
@@ -214,30 +217,26 @@
         let res = "";
         for(let i in romMap) { while(n >= romMap[i]) { res += i; n -= romMap[i]; } }
         document.getElementById('rom-res-box').innerText = res;
+        currentRom = ""; 
     }
     function addRom(c) { currentRom += c; validateRom(); }
-    function clearRom() { currentRom = ""; document.getElementById('rom-res-box').innerText = "..."; }
+    function clearRom() { currentRom = ""; document.getElementById('rom-arab-in').value = ""; document.getElementById('rom-res-box').innerText = "..."; }
     function validateRom() {
         const regex = /^(M{0,3})(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/;
         if(!regex.test(currentRom)) { document.getElementById('rom-res-box').innerText = "H I B A ! ! !"; return; }
         let res = 0;
-        let s = currentRom;
-        for(let i=0; i<s.length; i++) {
-            let v1 = romMap[s[i]], v2 = romMap[s[i+1]];
+        for(let i=0; i<currentRom.length; i++) {
+            let v1 = romMap[currentRom[i]], v2 = romMap[currentRom[i+1]];
             if(v2 > v1) { res += (v2-v1); i++; } else res += v1;
         }
-        document.getElementById('rom-res-box').innerText = currentRom + " = " + res;
+        document.getElementById('rom-res-box').innerText = currentRom + " = " + formatNum(res);
     }
 
-    // HOSSZVÁLTÓ SZINKRONBAN
-    const ratio = { km:1000, m:1, dm:0.1, cm:0.01, mm:0.001, mi:1609.344, yd:0.9144, in:0.0254 };
-    function unitSync(id) {
-        let val = parseFloat(document.getElementById('u_'+id).value);
-        if(isNaN(val)) return;
-        let inMeters = val * ratio[id];
-        for(let u in ratio) {
-            if(u !== id) document.getElementById('u_'+u).value = (inMeters / ratio[u]).toFixed(4);
-        }
+    // HOSSZVÁLTÓ (Eredeti elrendezés bővítve)
+    function convertLen(s) {
+        const l1=document.getElementById('l1-val'), u1=document.getElementById('l1-unit'), l2=document.getElementById('l2-val'), u2=document.getElementById('l2-unit');
+        let meters = (s===1) ? l1.value*u1.value : l2.value*u2.value;
+        if(s===1) l2.value = (meters/u2.value).toFixed(4); else l1.value = (meters/u1.value).toFixed(4);
     }
 
     // ÉLETKOR
