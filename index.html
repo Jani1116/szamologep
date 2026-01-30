@@ -9,45 +9,42 @@
     <style>
         :root {
             --bg: #000; --card: #1c1c1e; --accent: #0a84ff; --text: #fff; 
-            --gray: #8e8e93; --border: #38383a; --red: #ff453a; --success: #30d158;
+            --gray: #8e8e93; --border: #38383a;
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; overflow-x: hidden; }
-        .container { max-width: 600px; margin: auto; background: var(--card); border-radius: 24px; padding: 24px; min-height: 92vh; display: flex; flex-direction: column; border: 1px solid var(--border); box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
+        .container { max-width: 600px; margin: auto; background: var(--card); border-radius: 24px; padding: 20px; min-height: 92vh; display: flex; flex-direction: column; border: 1px solid var(--border); box-sizing: border-box; }
         .hidden { display: none !important; }
+        h2 { text-align: center; margin-bottom: 20px; }
         
-        h2 { text-align: center; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.5px; }
-
-        /* GOMBOK */
-        .main-btn { background: #2c2c2e; color: white; border: none; padding: 22px; border-radius: 18px; margin: 10px 0; font-size: 19px; font-weight: 600; cursor: pointer; width: 100%; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
-        .main-btn:active { background: #3a3a3c; }
+        /* Menü */
+        .main-btn { background: #2c2c2e; color: white; border: none; padding: 20px; border-radius: 15px; margin: 8px 0; font-size: 18px; cursor: pointer; width: 100%; display: flex; justify-content: space-between; align-items: center; }
         
-        /* SZÁMOLÓGÉP */
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .btn-3d { background: #333; border: none; border-radius: 16px; color: white; font-size: 22px; font-weight: 600; padding: 20px 0; cursor: pointer; }
-        .btn-3d:active { background: #444; }
-        .btn-op { color: var(--accent); background: #262629; }
+        /* Számológép */
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .btn-3d { background: #333; border: none; border-radius: 12px; color: white; font-size: 20px; font-weight: bold; padding: 18px 0; cursor: pointer; }
+        .btn-op { color: var(--accent); }
         .btn-eq { background: var(--accent); color: white; }
+        math-field { font-size: 28px; background: #111; border: 1px solid var(--border); border-radius: 12px; color: white; padding: 15px; margin-bottom: 15px; width: 100%; }
 
-        math-field { font-size: 32px; background: #111; border: 1px solid var(--border); border-radius: 16px; color: white; padding: 20px; margin-bottom: 20px; width: 100%; outline: none; }
-
-        /* KONVERTÁLÓK */
-        .unit-group { background: #2c2c2e; padding: 15px; border-radius: 18px; margin-bottom: 15px; border: 1px solid var(--border); }
+        /* Konvertálók */
+        .unit-group { background: #262629; padding: 15px; border-radius: 15px; margin-bottom: 15px; }
         .unit-row { display: flex; gap: 10px; align-items: center; }
-        .unit-row input { flex: 1; background: transparent; border: none; color: white; padding: 10px; font-size: 24px; font-weight: bold; width: 50%; outline: none; }
-        .unit-row select { background: #3a3a3c; border: none; color: var(--accent); padding: 8px 12px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .unit-row input { flex: 1; background: transparent; border: none; color: white; font-size: 22px; width: 50%; outline: none; }
+        .unit-row select { background: #3a3a3c; border: none; color: var(--accent); padding: 8px; border-radius: 8px; font-size: 16px; font-weight: bold; }
+        .label { color: var(--gray); font-size: 12px; text-transform: uppercase; margin-bottom: 5px; }
 
-        .back-btn { background: #333; color: white; border: none; padding: 18px; border-radius: 16px; width: 100%; margin-top: auto; font-weight: 700; font-size: 16px; }
-        .label { color: var(--gray); font-size: 13px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; margin-left: 5px; }
+        .back-btn { background: #333; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; margin-top: auto; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container" id="menu">
-    <div style="font-size: 60px; text-align: center; margin: 30px 0;">🛠️</div>
+    <div style="font-size: 50px; text-align: center; margin: 20px 0;">🛠️</div>
     <h2>Smart Toolbox</h2>
     <button class="main-btn" onclick="show('calc')">🔢 Számológép <span>›</span></button>
     <button class="main-btn" onclick="show('hossz')">📏 Hosszúság <span>›</span></button>
     <button class="main-btn" onclick="show('weight')">⚖️ Tömeg <span>›</span></button>
+    <button class="main-btn" onclick="show('speed')">🚀 Sebesség <span>›</span></button>
 </div>
 
 <div class="container hidden" id="calc">
@@ -71,7 +68,7 @@
         <button class="btn-3d btn-op" onclick="ins('+')">+</button>
         <button class="btn-3d btn-op" onclick="ins('^{#?}')">xⁿ</button>
         <button class="btn-3d" onclick="ins('0')">0</button>
-        <button class="btn-3d btn-op" onclick="ins(',')">,</button>
+        <button class="btn-3d" onclick="ins('.')">.</button>
         <button class="btn-3d btn-eq" onclick="calcResult()">=</button>
     </div>
     <button class="back-btn" onclick="show('menu')">Vissza</button>
@@ -87,8 +84,15 @@
 
 <div class="container hidden" id="weight">
     <h2>Tömeg</h2>
-    <div class="unit-group"><div class="label">Metrikus</div><div class="unit-row"><input type="number" id="w1" oninput="convertW(1)"><select id="w_u1" onchange="convertW(1)"><option value="1000">t</option><option value="1" selected>kg</option><option value="0.001">g</option></select></div></div>
-    <div class="unit-group"><div class="label">Imperial</div><div class="unit-row"><input type="number" id="w2" oninput="convertW(2)"><select id="w_u2" onchange="convertW(2)"><option value="0.45359">lb (font)</option><option value="0.02835">oz (uncia)</option></select></div></div>
+    <div class="unit-group"><div class="label">Metrikus</div><div class="unit-row"><input type="number" id="w1" oninput="convertW(1)"><select id="wu1" onchange="convertW(1)"><option value="1000">t</option><option value="1" selected>kg</option><option value="0.001">g</option></select></div></div>
+    <div class="unit-group"><div class="label">Imperial</div><div class="unit-row"><input type="number" id="w2" oninput="convertW(2)"><select id="wu2" onchange="convertW(2)"><option value="0.45359">lb</option><option value="0.02835">oz</option></select></div></div>
+    <button class="back-btn" onclick="show('menu')">Vissza</button>
+</div>
+
+<div class="container hidden" id="speed">
+    <h2>Sebesség</h2>
+    <div class="unit-group"><div class="label">Metrikus</div><div class="unit-row"><input type="number" id="s1" oninput="convertS(1)"><select id="su1" onchange="convertS(1)"><option value="1" selected>km/h</option><option value="3.6">m/s</option></select></div></div>
+    <div class="unit-group"><div class="label">Angolszász</div><div class="unit-row"><input type="number" id="s2" oninput="convertS(2)"><select id="su2" onchange="convertS(2)"><option value="1.609344">mph</option><option value="1.852">knot</option></select></div></div>
     <button class="back-btn" onclick="show('menu')">Vissza</button>
 </div>
 
@@ -100,14 +104,10 @@
 
     const mf = document.getElementById('calc-mf');
     function ins(v) { if(mf.value === "0") mf.value = ""; mf.insert(v); }
-    function op(type) { type === 'clear' ? mf.value = "0" : mf.executeCommand('deleteBackward'); }
-    
+    function op(t) { t === 'clear' ? mf.value = "0" : mf.executeCommand('deleteBackward'); }
     function calcResult() {
-        try {
-            let expression = mf.getValue("ascii-math").replace(/,/g, ".");
-            const res = math.evaluate(expression);
-            mf.value = res.toString().replace(/\./g, ",");
-        } catch(e) { alert("Hiba!"); }
+        try { mf.value = math.evaluate(mf.getValue("ascii-math")).toString(); } 
+        catch(e) { alert("Hiba!"); }
     }
 
     function convertH(s) {
@@ -119,9 +119,16 @@
 
     function convertW(s) {
         const v = [document.getElementById('w1'), document.getElementById('w2')];
-        const u = [document.getElementById('w_u1'), document.getElementById('w_u2')];
+        const u = [document.getElementById('wu1'), document.getElementById('wu2')];
         let kg = v[s-1].value * u[s-1].value;
         v.forEach((el, i) => { if(i !== s-1) el.value = (kg / u[i].value).toFixed(3); });
+    }
+
+    function convertS(s) {
+        const v = [document.getElementById('s1'), document.getElementById('s2')];
+        const u = [document.getElementById('su1'), document.getElementById('su2')];
+        let kmh = v[s-1].value * u[s-1].value;
+        v.forEach((el, i) => { if(i !== s-1) el.value = (kmh / u[i].value).toFixed(2); });
     }
 </script>
 </body>
