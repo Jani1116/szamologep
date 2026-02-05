@@ -9,144 +9,281 @@
     <style>
         :root {
             --bg: #000; --card: #1c1c1e; --accent: #0a84ff; --text: #fff; 
-            --gray: #8e8e93; --border: #38383a;
+            --gray: #8e8e93; --border: #38383a; --input-bg: #2c2c2e;
         }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
-        .container { max-width: 700px; margin: auto; background: var(--card); border-radius: 20px; padding: 20px; min-height: 94vh; display: flex; flex-direction: column; border: 1px solid var(--border); box-sizing: border-box; position: relative; }
+        .container { max-width: 700px; margin: auto; background: var(--card); border-radius: 20px; padding: 20px; min-height: 94vh; display: flex; flex-direction: column; border: 1px solid var(--border); box-sizing: border-box; }
         .hidden { display: none !important; }
+        h2 { text-align: center; margin: 10px 0 20px 0; font-weight: 600; }
         
-        h2 { text-align: center; margin-bottom: 20px; }
-
-        /* GOMBOK */
+        /* GOMBOK ÉS INPUTOK */
+        .main-btn { background: var(--input-bg); color: white; border: none; padding: 20px; border-radius: 15px; margin: 8px 0; font-size: 18px; cursor: pointer; width: 100%; display: flex; justify-content: space-between; align-items: center; }
         .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .btn-3d { background: #333; border: none; border-radius: 12px; color: white; font-size: 20px; font-weight: bold; padding: 18px 0; cursor: pointer; }
-        .btn-3d:active { background: #444; transform: scale(0.98); }
+        .btn-3d:active { background: #444; }
         .btn-op { color: var(--accent); }
-        .btn-eq { background: var(--accent); color: white; }
+        .btn-eq { background: var(--accent); }
 
-        .main-btn { background: #2c2c2e; color: white; border: none; padding: 20px; border-radius: 15px; margin: 8px 0; font-size: 18px; cursor: pointer; width: 100%; display: flex; justify-content: space-between; }
-        
-        /* SZÁMOLÓGÉP FEJLÉC */
-        .calc-header { position: relative; width: 100%; }
-        .mode-btn { position: absolute; right: 10px; top: 10px; z-index: 10; background: #3a3a3c; color: var(--accent); border: 1px solid var(--border); padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 12px; }
-        
-        math-field { font-size: 32px; background: #111; border: 1px solid var(--border); border-radius: 12px; color: white; padding: 15px; margin-bottom: 15px; width: 100%; outline: none; }
-        math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) { display: none; }
+        math-field { font-size: 32px; background: #111; border: 1px solid var(--border); border-radius: 12px; color: white; padding: 15px; margin-bottom: 5px; width: 100%; outline: none; }
 
-        /* INPUTOK */
-        input[type="date"], input[type="number"] { background: #2c2c2e; border: 1px solid var(--border); color: white; padding: 15px; border-radius: 12px; font-size: 18px; width: 100%; box-sizing: border-box; margin-bottom: 10px; }
-        select { background: #3a3a3c; border: 1px solid var(--accent); color: white; padding: 15px; border-radius: 12px; font-size: 18px; cursor: pointer; }
+        /* ELŐZMÉNYEK */
+        #history-panel { background: #111; border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-bottom: 15px; font-size: 14px; color: var(--gray); max-height: 100px; overflow-y: auto; }
+        .hist-item { border-bottom: 1px solid #222; padding: 4px 0; cursor: pointer; display: flex; justify-content: space-between; }
 
-        .back-btn { background: #333; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; margin-top: auto; font-weight: 600; }
-        .res-box { background: #111; padding: 15px; border-radius: 12px; margin-top: 10px; text-align: center; font-size: 18px; border: 1px dashed var(--gray); }
+        .conv-row { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+        .unit-group { display: flex; gap: 8px; align-items: center; margin-bottom: 5px; }
+        input[type="number"], input[type="date"] { background: var(--input-bg); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 10px; font-size: 18px; width: 100%; box-sizing: border-box; }
+        select { background: #3a3a3c; border: 1px solid var(--border); color: white; padding: 10px; border-radius: 10px; font-size: 15px; flex-shrink: 0; }
+
+        .res-box { background: #111; padding: 15px; border-radius: 12px; margin-top: 10px; line-height: 1.8; border: 1px dashed var(--gray); text-align: center; }
+        .back-btn { background: #333; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; margin-top: auto; font-weight: bold; }
+        .mode-btn { background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 8px; margin-bottom: 10px; align-self: flex-end; font-size: 12px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container" id="menu">
     <div style="font-size: 50px; text-align: center; margin: 20px 0;">🛠️</div>
-    <h2 style="margin-top:0">Smart Toolbox</h2>
-    <button class="main-btn" onclick="nav('calc')">🔢 Profi Számológép <span>›</span></button>
-    <button class="main-btn" onclick="nav('hossz')">📏 Hosszváltó (HU/UK) <span>›</span></button>
-    <button class="main-btn" onclick="nav('egyeb')">🎂 Születésnap & Egyéb <span>›</span></button>
+    <h2>Smart Toolbox</h2>
+    <button class="main-btn" onclick="nav('calc')">🔢 Számológép <span>›</span></button>
+    <button class="main-btn" onclick="nav('hossz')">📏 Hosszúság <span>›</span></button>
+    <button class="main-btn" onclick="nav('sebesseg')">⚡ Sebesség <span>›</span></button>
+    <button class="main-btn" onclick="nav('bday')">🎂 Születésnap <span>›</span></button>
 </div>
 
 <div class="container hidden" id="calc">
-    <div class="calc-header">
-        <button class="mode-btn" onclick="toggleMode()">MODE</button>
-        <math-field id="calc-mf" read-only>0</math-field>
-    </div>
-    <div id="panel-basic" class="calc-grid">
+    <h2>Számológép</h2>
+    <div id="history-panel"><i>Nincs még előzmény...</i></div>
+    <button class="mode-btn" onclick="toggleCalc()">MODE (Váltás)</button>
+    <math-field id="calc-mf" read-only>0</math-field>
+    
+    <div id="calc-basic" class="calc-grid">
         <button class="btn-3d btn-op" onclick="op('clear')">AC</button>
         <button class="btn-3d btn-op" onclick="op('back')">⌫</button>
-        <button class="btn-3d btn-op" onclick="ins('\\pi')">π</button>
         <button class="btn-3d btn-op" onclick="ins('/')">÷</button>
+        <button class="btn-3d btn-op" onclick="ins('*')">×</button>
         <button class="btn-3d" onclick="ins('7')">7</button>
         <button class="btn-3d" onclick="ins('8')">8</button>
         <button class="btn-3d" onclick="ins('9')">9</button>
-        <button class="btn-3d btn-op" onclick="ins('*')">×</button>
+        <button class="btn-3d btn-op" onclick="ins('-')">-</button>
         <button class="btn-3d" onclick="ins('4')">4</button>
         <button class="btn-3d" onclick="ins('5')">5</button>
         <button class="btn-3d" onclick="ins('6')">6</button>
-        <button class="btn-3d btn-op" onclick="ins('-')">-</button>
+        <button class="btn-3d btn-op" onclick="ins('+')">+</button>
         <button class="btn-3d" onclick="ins('1')">1</button>
         <button class="btn-3d" onclick="ins('2')">2</button>
         <button class="btn-3d" onclick="ins('3')">3</button>
-        <button class="btn-3d btn-op" onclick="ins('+')">+</button>
-        <button class="btn-3d btn-op" onclick="ins('^{#?}')">xⁿ</button>
-        <button class="btn-3d" onclick="ins('0')">0</button>
-        <button class="btn-3d btn-op" onclick="ins('\\sqrt[#?]{#?}')">ⁿ√</button>
-        <button class="btn-3d btn-eq" onclick="calcResult()">=</button>
+        <button class="btn-3d btn-eq" style="grid-row: span 2" onclick="calcResult()">=</button>
+        <button class="btn-3d" style="grid-column: span 2" onclick="ins('0')">0</button>
+        <button class="btn-3d" onclick="ins('.')">,</button>
     </div>
-    <div id="panel-pro" class="calc-grid hidden">
+
+    <div id="calc-pro" class="calc-grid hidden">
+        <button class="btn-3d btn-op" onclick="ins('^{#?}')">xⁿ</button>
+        <button class="btn-3d btn-op" onclick="ins('\\sqrt{#?}')">√</button>
+        <button class="btn-3d btn-op" onclick="ins('\\pi')">π</button>
+        <button class="btn-3d btn-op" onclick="ins('e')">e</button>
         <button class="btn-3d btn-op" onclick="ins('\\sin(#?)')">sin</button>
         <button class="btn-3d btn-op" onclick="ins('\\cos(#?)')">cos</button>
         <button class="btn-3d btn-op" onclick="ins('\\tan(#?)')">tan</button>
-        <button class="btn-3d btn-op" onclick="ins('e')">e</button>
-        <button class="btn-3d" style="grid-column: span 2" onclick="op('clear')">AC</button>
-        <button class="btn-3d btn-eq" style="grid-column: span 2" onclick="calcResult()">=</button>
+        <button class="btn-3d btn-op" onclick="ins('\\ln(#?)')">ln</button>
+        <button class="btn-3d btn-eq" style="grid-column: span 4" onclick="calcResult()">=</button>
     </div>
     <button class="back-btn" onclick="nav('menu')">Vissza</button>
 </div>
 
 <div class="container hidden" id="hossz">
     <h2>Hosszúság</h2>
-    <input type="number" id="v1" oninput="convert(1)" placeholder="Metrikus">
-    <select id="u1" onchange="convert(1)" style="margin-bottom:20px"><option value="1">m</option><option value="1000">km</option><option value="0.01">cm</option></select>
-    <input type="number" id="v3" oninput="convert(3)" placeholder="Angolszász">
-    <select id="u3" onchange="convert(3)"><option value="1609.344">Mile</option><option value="0.0254">Inch</option></select>
+    <div class="conv-row">
+        <label>Metrikus</label>
+        <div class="unit-group">
+            <input type="number" id="h-m1-v" oninput="syncH(0)">
+            <select id="h-m1-u" onchange="syncH(0)">
+                <option value="1000">km</option><option value="1" selected>m</option>
+                <option value="0.1">dm</option><option value="0.01">cm</option><option value="0.001">mm</option>
+            </select>
+        </div>
+        <div class="unit-group">
+            <input type="number" id="h-m2-v" oninput="syncH(1)">
+            <select id="h-m2-u" onchange="syncH(1)">
+                <option value="1000">km</option><option value="1">m</option>
+                <option value="0.1">dm</option><option value="0.01" selected>cm</option><option value="0.001">mm</option>
+            </select>
+        </div>
+    </div>
+    <div class="conv-row">
+        <label>Angolszász</label>
+        <div class="unit-group">
+            <input type="number" id="h-a1-v" oninput="syncH(2)">
+            <select id="h-a1-u" onchange="syncH(2)">
+                <option value="1609.344" selected>Mile</option><option value="0.9144">Yard</option>
+                <option value="0.3048">Láb</option><option value="0.0254">Inch</option>
+            </select>
+        </div>
+        <div class="unit-group">
+            <input type="number" id="h-a2-v" oninput="syncH(3)">
+            <select id="h-a2-u" onchange="syncH(3)">
+                <option value="1609.344">Mile</option><option value="0.9144">Yard</option>
+                <option value="0.3048">Láb</option><option value="0.0254" selected>Inch</option>
+            </select>
+        </div>
+    </div>
     <button class="back-btn" onclick="nav('menu')">Vissza</button>
 </div>
 
-<div class="container hidden" id="egyeb">
-    <h2>Születésnap számláló</h2>
-    <input type="date" id="bday" onchange="calcBday()">
+<div class="container hidden" id="sebesseg">
+    <h2>Sebesség</h2>
+    <div class="conv-row">
+        <label>Metrikus</label>
+        <div class="unit-group">
+            <input type="number" id="s-m1-v" oninput="syncS(0)">
+            <select id="s-m1-uD" onchange="syncS(0)"><option value="1000">km</option><option value="1">m</option></select>
+            <span>/</span>
+            <select id="s-m1-uT" onchange="syncS(0)"><option value="3600">óra</option><option value="60">perc</option><option value="1">másodperc</option></select>
+        </div>
+        <div class="unit-group">
+            <input type="number" id="s-m2-v" oninput="syncS(1)">
+            <select id="s-m2-uD" onchange="syncS(1)"><option value="1000">km</option><option value="1" selected>m</option></select>
+            <span>/</span>
+            <select id="s-m2-uT" onchange="syncS(1)"><option value="3600">óra</option><option value="60">perc</option><option value="1" selected>másodperc</option></select>
+        </div>
+    </div>
+    <div class="conv-row">
+        <label>Angolszász & Special</label>
+        <div class="unit-group">
+            <input type="number" id="s-a1-v" oninput="syncS(2)">
+            <select id="s-a1-uD" onchange="syncS(2)">
+                <option value="1609.344">Mile</option>
+                <option value="0.3048">Láb</option>
+                <option value="1852">Csomó (nm)</option>
+            </select>
+            <span>/</span>
+            <select id="s-a1-uT" onchange="syncS(2)"><option value="3600">óra</option><option value="1">másodperc</option></select>
+        </div>
+        <div class="unit-group">
+            <input type="number" id="s-a2-v" oninput="syncS(3)">
+            <select id="s-a2-uD" onchange="syncS(3)">
+                <option value="1609.344">Mile</option>
+                <option value="0.3048" selected>Láb</option>
+                <option value="1852">Csomó (nm)</option>
+            </select>
+            <span>/</span>
+            <select id="s-a2-uT" onchange="syncS(3)"><option value="3600">óra</option><option value="1" selected>másodperc</option></select>
+        </div>
+    </div>
+    <button class="back-btn" onclick="nav('menu')">Vissza</button>
+</div>
+
+<div class="container hidden" id="bday">
+    <h2>Születésnap</h2>
+    <input type="date" id="bday-input" onchange="calcBday()">
     <div id="bday-res" class="res-box">Válassz dátumot!</div>
     <button class="back-btn" onclick="nav('menu')">Vissza</button>
 </div>
 
 <script>
-    // NAVIGÁCIÓ (Vissza gomb kezelése)
-    window.onload = () => history.replaceState({page: 'menu'}, '');
-    window.onpopstate = (e) => { if(e.state) show(e.state.page, false); };
+    const mf = document.getElementById('calc-mf');
+    let history = [];
 
     function nav(id) {
-        if(id === 'menu') history.back();
-        else { history.pushState({page: id}, ''); show(id, false); }
+        document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
     }
 
-    function show(id) { 
-        document.querySelectorAll('.container').forEach(c => c.classList.add('hidden')); 
-        document.getElementById(id).classList.remove('hidden'); 
+    // SZÁMOLÓGÉP LOGIKA
+    function toggleCalc() {
+        document.getElementById('calc-basic').classList.toggle('hidden');
+        document.getElementById('calc-pro').classList.toggle('hidden');
     }
-
-    function toggleMode() {
-        document.getElementById('panel-basic').classList.toggle('hidden');
-        document.getElementById('panel-pro').classList.toggle('hidden');
-    }
-
-    // LOGIKA
-    const mf = document.getElementById('calc-mf');
     function ins(v) { if(mf.value === "0") mf.value = ""; mf.insert(v); }
-    function op(t) { t==='clear'?mf.value="0":mf.executeCommand('deleteBackward'); }
+    function op(t) { t === 'clear' ? mf.value = "0" : mf.executeCommand('deleteBackward'); }
+    
     function calcResult() {
-        try { mf.value = math.evaluate(mf.getValue("ascii-math")).toString(); } catch(e){ alert("Hiba!"); }
+        try {
+            const rawExpr = mf.getValue("ascii-math");
+            const res = math.evaluate(rawExpr);
+            const formattedRes = math.format(res, {precision: 10});
+            
+            // Előzmények mentése
+            addHistory(rawExpr + " = " + formattedRes);
+            
+            mf.value = formattedRes;
+        } catch(e) { alert("Hiba a számításban!"); }
     }
 
+    function addHistory(entry) {
+        history.unshift(entry);
+        if(history.length > 5) history.pop();
+        updateHistoryUI();
+    }
+
+    function updateHistoryUI() {
+        const panel = document.getElementById('history-panel');
+        if(history.length === 0) return;
+        panel.innerHTML = history.map(h => `<div class="hist-item" onclick="mf.value='${h.split('=')[1].trim()}'"><span>${h}</span></div>`).join('');
+    }
+
+    // HOSSZÚSÁG LOGIKA
+    const hIds = ['h-m1', 'h-m2', 'h-a1', 'h-a2'];
+    function syncH(sourceIdx) {
+        let val = parseFloat(document.getElementById(hIds[sourceIdx]+'-v').value);
+        let unit = parseFloat(document.getElementById(hIds[sourceIdx]+'-u').value);
+        if(isNaN(val)) return;
+        let meters = val * unit;
+        hIds.forEach((id, idx) => {
+            if(idx !== sourceIdx) {
+                let u = parseFloat(document.getElementById(id+'-u').value);
+                document.getElementById(id+'-v').value = parseFloat((meters / u).toPrecision(6));
+            }
+        });
+    }
+
+    // SEBESSÉG LOGIKA (Alap: m/s)
+    const sIds = ['s-m1', 's-m2', 's-a1', 's-a2'];
+    function syncS(sourceIdx) {
+        let val = parseFloat(document.getElementById(sIds[sourceIdx]+'-v').value);
+        let uD = parseFloat(document.getElementById(sIds[sourceIdx]+'-uD').value);
+        let uT = parseFloat(document.getElementById(sIds[sourceIdx]+'-uT').value);
+        
+        if(isNaN(val)) return;
+        
+        // Ha a távolság "Csomó" (1852 méter) és az idő "óra", akkor a Knot definíciója szerint számolunk
+        let ms = val * (uD / uT);
+
+        sIds.forEach((id, idx) => {
+            if(idx !== sourceIdx) {
+                let d = parseFloat(document.getElementById(id+'-uD').value);
+                let t = parseFloat(document.getElementById(id+'-uT').value);
+                document.getElementById(id+'-v').value = parseFloat((ms / (d / t)).toPrecision(6));
+            }
+        });
+    }
+
+    // SZÜLETÉSNAP LOGIKA
     function calcBday() {
-        const d = new Date(document.getElementById('bday').value);
-        if(!d.getTime()) return;
-        const diff = new Date() - d;
-        const days = Math.floor(diff / (1000*60*60*24));
-        document.getElementById('bday-res').innerHTML = `<b>${days}</b> napos vagy!`;
-    }
+        const b = new Date(document.getElementById('bday-input').value);
+        if(!b.getTime()) return;
+        const now = new Date();
+        
+        const diffDays = Math.floor((now - b) / (1000 * 60 * 60 * 24));
+        
+        let years = now.getFullYear() - b.getFullYear();
+        let months = now.getMonth() - b.getMonth();
+        let days = now.getDate() - b.getDate();
+        if (days < 0) { months--; days += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+        if (months < 0) { years--; months += 12; }
 
-    function convert(source) {
-        const v1 = document.getElementById('v1'), u1 = document.getElementById('u1');
-        const v3 = document.getElementById('v3'), u3 = document.getElementById('u3');
-        let m = source === 1 ? v1.value * u1.value : v3.value * u3.value;
-        if(source !== 1) v1.value = (m / u1.value).toFixed(2);
-        if(source !== 3) v3.value = (m / u3.value).toFixed(2);
+        let next = new Date(now.getFullYear(), b.getMonth(), b.getDate());
+        if (next < now) next.setFullYear(now.getFullYear() + 1);
+        let diffNext = next - now;
+        let nextMonths = Math.floor(diffNext / (1000 * 60 * 60 * 24 * 30.4375));
+        let nextDays = Math.floor((diffNext / (1000 * 60 * 60 * 24)) % 30.4375);
+
+        document.getElementById('bday-res').innerHTML = `
+            <b>${diffDays}</b> napos vagy<br>
+            <b>${years}</b> év, <b>${months}</b> hónap, <b>${days}</b> nap<br>
+            Következő szülinap: <b>${nextMonths}</b> hónap, <b>${nextDays}</b> nap múlva
+        `;
     }
 </script>
 </body>
