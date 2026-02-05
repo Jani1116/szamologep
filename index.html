@@ -34,7 +34,7 @@
 
         .res-box { background: #111; padding: 15px; border-radius: 12px; margin-top: 10px; line-height: 1.8; border: 1px dashed var(--gray); text-align: center; }
         .back-btn { background: #333; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; margin-top: auto; font-weight: bold; }
-        .mode-btn { background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 8px; margin-bottom: 10px; align-self: flex-end; font-size: 12px; }
+        .mode-btn { background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 8px; margin-bottom: 10px; align-self: flex-end; font-size: 12px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -51,7 +51,7 @@
 <div class="container hidden" id="calc">
     <h2>Számológép</h2>
     <div id="history-panel"><i>Nincs még előzmény...</i></div>
-    <button class="mode-btn" onclick="toggleCalc()">MODE (Váltás)</button>
+    <button class="mode-btn" onclick="toggleCalc()">MODE</button>
     <math-field id="calc-mf" read-only>0</math-field>
     <div id="calc-basic" class="calc-grid">
         <button class="btn-3d btn-op" onclick="op('clear')">AC</button>
@@ -84,7 +84,7 @@
         <button class="btn-3d btn-op" onclick="ins('\\ln(#?)')">ln</button>
         <button class="btn-3d btn-eq" style="grid-column: span 4" onclick="calcResult()">=</button>
     </div>
-    <button class="back-btn" onclick="handleBack()">Vissza</button>
+    <button class="back-btn" onclick="handleBackBtn()">Vissza</button>
 </div>
 
 <div class="container hidden" id="hossz">
@@ -99,7 +99,7 @@
         <div class="unit-group"><input type="number" id="h-a1-v" oninput="syncH(2)"><select id="h-a1-u" onchange="syncH(2)"><option value="1609.344" selected>Mile</option><option value="0.9144">Yard</option><option value="0.3048">Láb</option><option value="0.0254">Inch</option></select></div>
         <div class="unit-group"><input type="number" id="h-a2-v" oninput="syncH(3)"><select id="h-a2-u" onchange="syncH(3)"><option value="1609.344">Mile</option><option value="0.9144">Yard</option><option value="0.3048">Láb</option><option value="0.0254" selected>Inch</option></select></div>
     </div>
-    <button class="back-btn" onclick="handleBack()">Vissza</button>
+    <button class="back-btn" onclick="handleBackBtn()">Vissza</button>
 </div>
 
 <div class="container hidden" id="sebesseg">
@@ -109,48 +109,56 @@
         <div class="unit-group"><input type="number" id="s-m1-v" oninput="syncS(0)"><select id="s-m1-uD" onchange="syncS(0)"><option value="1000">km</option><option value="1">m</option></select><span>/</span><select id="s-m1-uT" onchange="syncS(0)"><option value="3600">óra</option><option value="60">perc</option><option value="1">másodperc</option></select></div>
         <div class="unit-group"><input type="number" id="s-m2-v" oninput="syncS(1)"><select id="s-m2-uD" onchange="syncS(1)"><option value="1000">km</option><option value="1" selected>m</option></select><span>/</span><select id="s-m2-uT" onchange="syncS(1)"><option value="3600">óra</option><option value="60">perc</option><option value="1" selected>másodperc</option></select></div>
     </div>
-    <button class="back-btn" onclick="handleBack()">Vissza</button>
+    <div class="conv-row">
+        <label>Angolszász & Special</label>
+        <div class="unit-group">
+            <input type="number" id="s-a1-v" oninput="syncS(2)">
+            <select id="s-a1-uD" onchange="syncS(2)"><option value="1609.344">Mile</option><option value="0.3048">Láb</option><option value="1852">Csomó</option></select>
+            <span>/</span>
+            <select id="s-a1-uT" onchange="syncS(2)"><option value="3600">óra</option><option value="1">másodperc</option></select>
+        </div>
+        <div class="unit-group">
+            <input type="number" id="s-a2-v" oninput="syncS(3)">
+            <select id="s-a2-uD" onchange="syncS(3)"><option value="1609.344">Mile</option><option value="0.3048" selected>Láb</option><option value="1852">Csomó</option></select>
+            <span>/</span>
+            <select id="s-a2-uT" onchange="syncS(3)"><option value="3600">óra</option><option value="1" selected>másodperc</option></select>
+        </div>
+    </div>
+    <button class="back-btn" onclick="handleBackBtn()">Vissza</button>
 </div>
 
 <div class="container hidden" id="bday">
     <h2>Születésnap</h2>
     <input type="date" id="bday-input" onchange="calcBday()">
     <div id="bday-res" class="res-box">Válassz dátumot!</div>
-    <button class="back-btn" onclick="handleBack()">Vissza</button>
+    <button class="back-btn" onclick="handleBackBtn()">Vissza</button>
 </div>
 
 <script>
     const mf = document.getElementById('calc-mf');
-    let history = [];
-    let currentId = 'menu';
+    let calcHistory = [];
 
-    // NAVIGÁCIÓ ÉS VISSZA GOMB KEZELÉSE
-    function nav(id, push = true) {
+    // NAVIGÁCIÓ JAVÍTÁSA
+    function nav(id) {
         document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
-        currentId = id;
-        if(push && id !== 'menu') {
-            history.pushState({view: id}, "");
+        if(id !== 'menu') {
+            window.history.pushState({view: id}, "");
         }
     }
 
-    function handleBack() {
-        if (currentId !== 'menu') {
+    function handleBackBtn() {
+        if(document.getElementById('menu').classList.contains('hidden')) {
             window.history.back();
         }
     }
 
     window.onpopstate = function(event) {
-        // Ha visszalépünk és nincs állapota, akkor a menübe megyünk
-        nav('menu', false);
+        document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+        document.getElementById('menu').classList.remove('hidden');
     };
 
-    // Kezdeti állapot beállítása, hogy a vissza gomb működjön
-    window.onload = () => {
-        window.history.replaceState({view: 'menu'}, "");
-    };
-
-    // SZÁMOLÓGÉP LOGIKA
+    // SZÁMOLÓGÉP
     function toggleCalc() {
         document.getElementById('calc-basic').classList.toggle('hidden');
         document.getElementById('calc-pro').classList.toggle('hidden');
@@ -162,75 +170,52 @@
             const rawExpr = mf.getValue("ascii-math");
             const res = math.evaluate(rawExpr);
             const formattedRes = math.format(res, {precision: 10});
-            addHistory(rawExpr + " = " + formattedRes);
+            calcHistory.unshift(rawExpr + " = " + formattedRes);
+            if(calcHistory.length > 5) calcHistory.pop();
+            document.getElementById('history-panel').innerHTML = calcHistory.map(h => `<div class="hist-item" onclick="mf.value='${h.split('=')[1].trim()}'"><span>${h}</span></div>`).join('');
             mf.value = formattedRes;
-        } catch(e) { alert("Hiba a számításban!"); }
-    }
-    function addHistory(entry) {
-        history.unshift(entry);
-        if(history.length > 5) history.pop();
-        const panel = document.getElementById('history-panel');
-        panel.innerHTML = history.map(h => `<div class="hist-item" onclick="mf.value='${h.split('=')[1].trim()}'"><span>${h}</span></div>`).join('');
+        } catch(e) { alert("Hiba!"); }
     }
 
-    // HOSSZÚSÁG ÉS SEBESSÉG (Maradt a korábbi jól működő logika)
+    // MÉRTÉKEGYSÉGEK
     const hIds = ['h-m1', 'h-m2', 'h-a1', 'h-a2'];
     function syncH(idx) {
         let meters = parseFloat(document.getElementById(hIds[idx]+'-v').value) * parseFloat(document.getElementById(hIds[idx]+'-u').value);
         if(isNaN(meters)) return;
         hIds.forEach((id, i) => { if(i!==idx) document.getElementById(id+'-v').value = parseFloat((meters/parseFloat(document.getElementById(id+'-u').value)).toPrecision(6)); });
     }
-    const sIds = ['s-m1', 's-m2'];
+
+    const sIds = ['s-m1', 's-m2', 's-a1', 's-a2'];
     function syncS(idx) {
-        let ms = parseFloat(document.getElementById(sIds[idx]+'-v').value) * (parseFloat(document.getElementById(sIds[idx]+'-uD').value)/parseFloat(document.getElementById(sIds[idx]+'-uT').value));
-        if(isNaN(ms)) return;
-        sIds.forEach((id, i) => { if(i!==idx) document.getElementById(id+'-v').value = parseFloat((ms/(parseFloat(document.getElementById(id+'-uD').value)/parseFloat(document.getElementById(id+'-uT').value))).toPrecision(6)); });
+        let v = parseFloat(document.getElementById(sIds[idx]+'-v').value);
+        let d = parseFloat(document.getElementById(sIds[idx]+'-uD').value);
+        let t = parseFloat(document.getElementById(sIds[idx]+'-uT').value);
+        if(isNaN(v)) return;
+        let ms = v * (d / t);
+        sIds.forEach((id, i) => {
+            if(i!==idx) {
+                let uD = parseFloat(document.getElementById(id+'-uD').value);
+                let uT = parseFloat(document.getElementById(id+'-uT').value);
+                document.getElementById(id+'-v').value = parseFloat((ms / (uD / uT)).toPrecision(6));
+            }
+        });
     }
 
-    // JAVÍTOTT SZÜLETÉSNAP LOGIKA (PONTOS HÓNAPOKKAL)
+    // SZÜLETÉSNAP
     function calcBday() {
-        const bdayVal = document.getElementById('bday-input').value;
-        if(!bdayVal) return;
-        const b = new Date(bdayVal);
+        const b = new Date(document.getElementById('bday-input').value);
+        if(!b.getTime()) return;
         const now = new Date();
-        
-        // Összes nap
         const diffDays = Math.floor((now - b) / (1000 * 60 * 60 * 24));
-        
-        // Év, hónap, nap pontosan
         let years = now.getFullYear() - b.getFullYear();
         let months = now.getMonth() - b.getMonth();
         let days = now.getDate() - b.getDate();
-
-        if (days < 0) {
-            months--;
-            const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-            days += prevMonth.getDate();
-        }
-        if (months < 0) {
-            years--;
-            months += 12;
-        }
-
-        // Következő szülinapig hátralévő idő
+        if (days < 0) { months--; days += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+        if (months < 0) { years--; months += 12; }
         let next = new Date(now.getFullYear(), b.getMonth(), b.getDate());
         if (next <= now) next.setFullYear(now.getFullYear() + 1);
-        
-        let nextMonths = next.getMonth() - now.getMonth();
-        let nextDays = next.getDate() - now.getDate();
-        if (nextMonths < 0 || (nextMonths === 0 && nextDays < 0)) nextMonths += 12;
-        if (nextDays < 0) {
-            nextMonths--;
-            const prevMonthNext = new Date(next.getFullYear(), next.getMonth(), 0);
-            nextDays += prevMonthNext.getDate();
-        }
-
-        document.getElementById('bday-res').innerHTML = `
-            <b>${diffDays.toLocaleString()}</b> napos vagy<br>
-            <span style="color:var(--accent)">${years} év, ${months} hónap, ${days} nap</span><br>
-            <hr style="border:0; border-top:1px solid #333; margin:10px 0">
-            Következőig: <b>${nextMonths}</b> hó és <b>${nextDays}</b> nap
-        `;
+        let nDays = Math.ceil((next - now) / (1000 * 60 * 60 * 24));
+        document.getElementById('bday-res').innerHTML = `<b>${diffDays.toLocaleString()}</b> napos vagy<br><span style="color:var(--accent)">${years} év, ${months} hó, ${days} nap</span><br>Következő szülinap: <b>${nDays}</b> nap múlva`;
     }
 </script>
 </body>
